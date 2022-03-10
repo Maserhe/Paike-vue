@@ -10,10 +10,7 @@
 </script>
 
 <style lang="scss" scoped>
-$bg: red;
-.container {
-  background-color: $bg;
-}
+
 </style>
 
 
