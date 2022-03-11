@@ -1,15 +1,33 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 
-
 const routes = [
 
 
   {
-    path: '/',
+    path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
   },
+
+  {
+    path: '/dashboard',
+    component: () => import('@/views/dashboard/index'),
+    hidden: true
+  },
+
+  {
+    path: '/',
+    redirect: '/introduce'
+  },
+  {
+    path: '/introduce',
+    name: 'introduce',
+    component: () => import(/* webpackChunkName: "introduce" */ '../views/Introduce.vue')
+  },
+
+
+
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
@@ -20,6 +38,7 @@ const routes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
+
 
   
 ]
