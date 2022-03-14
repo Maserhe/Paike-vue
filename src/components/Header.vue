@@ -15,14 +15,13 @@
           <div class="author">
             <!-- <i class="icon el-icon-s-custom" /> -->
               <el-icon><i-user-filled /></el-icon>
-            Maserhe
+            {{ userInfo.userrealname }}
             <el-icon><i-caret-bottom /></el-icon>
           </div>
         </template>
         <div class="nickname">
-          <p>登录名：登陆名</p>
-          <p>昵称：啦啦啦</p>
-          <el-tag size="small" effect="dark" class="logout" @click="logout">退出</el-tag>
+          <p>登录名：{{ userInfo.useraccount }}</p>
+          <el-tag size="small" effect="dark" class="logout" @click="logout()">退出</el-tag>
         </div>
       </el-popover>
     </div>
@@ -30,34 +29,23 @@
 </template>
 
 <script>
+
 import { onMounted, reactive, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
+import { createStore } from 'vuex'
 import { pathMap } from '@/utils'
+import axios from 'axios'
+import { localGet, localRemove } from '../utils'
 export default {
   name: 'Header',
   setup() {
     const router = useRouter()
+    const store = createStore()
     const state = reactive({
       name: 'dashboard',
       userInfo: null,
       hasBack: false
     })
-    onMounted(() => {
-    //   const pathname = window.location.hash.split('/')[1] || ''
-    //   if (!['login'].includes(pathname)) {
-    //     getUserInfo()
-    //   }
-    })
-    const getUserInfo = async () => {
-    //   const userInfo = await axios.get('/adminUser/profile')
-    //   state.userInfo = userInfo
-    }
-    const logout = () => {
-    //   axios.delete('/logout').then(() => {
-    //     localRemove('token')
-    //     window.location.reload()
-    //   })
-    }
     const back = () => {
       router.back()
     }
@@ -72,8 +60,36 @@ export default {
     })
     return {
       ...toRefs(state),
-      logout,
       back
+    }
+  },
+  created() {
+    const user = sessionStorage.getItem("userInfo")
+    if(user) {
+      this.userInfo = JSON.parse(user)
+      // 根据请求获取用户信息
+    } else {
+      this.$router.push("/login")
+    }
+  },
+  methods: {
+    getUserInfo(){
+      
+    },
+    logout(){
+      this.$axios.get("/logout").then((res)=> {
+          const data = res.data          
+         if (data.code == 200) {
+            ElMessage.success("成功退出登陆!")
+         }
+      })
+      // 删除token
+      localRemove("token")
+      // 删除用户信息
+      this.$store.commit("REMOVE_INFO")
+      // 删除header
+      window.location.reload()
+      
     }
   }
 }

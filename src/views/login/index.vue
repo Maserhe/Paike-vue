@@ -57,20 +57,21 @@
 <script>
 
 import { validUsername } from '@/utils/validate'
-
+import { localGet, localSet } from '@/utils/index'
+import { ElMessage } from 'element-plus'
 export default {
   name: "Login",
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的用户名'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (value.length < 3) {
+        callback(new Error('请输入正确的密码'))
       } else {
         callback()
       }
@@ -78,7 +79,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: 'admin'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -99,6 +100,7 @@ export default {
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
+    document.title="登陆"
   },
   
   methods: {
@@ -119,15 +121,41 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          const _this = this
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
+          this.$axios.post("/login", this.loginForm).then((res) => {
+            const data = res.data
+            // 登陆成功
+            if (data.code == 200) {
+              const data = res.data
+              const token = res.headers["authorization"]
+              console.log(typeof(token), token)
+              localStorage.setItem("token", res.headers["authorization"])
+
+              // 保存用户信息
+              _this.$store.commit("SET_USERINFO", data.data)
+              ElMessage.success(data.msg)
+              _this.$router.push("/introduce")
+            } else {
+              // 登陆信息出现问题
+              ElMessage.error(data.msg)
+            }
+
+          }).catch((error) => {
+            console.log(error)
+            this.loading = false
+          })
+          
+
+          // this.$store.dispatch('user/login', this.loginForm)
+          //   .then(() => {
+          //     this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+          //     this.loading = false
+          //   })
+          //   .catch(() => {
+          //     this.loading = false
+          //   })
+          
         } else {
           console.log('error submit!!')
           return false

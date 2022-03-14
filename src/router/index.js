@@ -26,8 +26,6 @@ const routes = [
     component: () => import(/* webpackChunkName: "introduce" */ '../views/Introduce.vue')
   },
 
-
-
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
@@ -39,8 +37,6 @@ const routes = [
     hidden: true
   },
 
-
-  
 ]
 
 const router = createRouter({
