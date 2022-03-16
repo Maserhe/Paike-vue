@@ -58,7 +58,6 @@
 
 import { validUsername } from '@/utils/validate'
 import { localGet, localSet } from '@/utils/index'
-import { ElMessage } from 'element-plus'
 export default {
   name: "Login",
   data() {
@@ -93,7 +92,7 @@ export default {
       otherQuery: {}
     }
   },
-
+ 
   mounted() {
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
@@ -131,18 +130,17 @@ export default {
               const token = res.headers["authorization"]
               console.log(typeof(token), token)
               localStorage.setItem("token", res.headers["authorization"])
-
               // 保存用户信息
               _this.$store.commit("SET_USERINFO", data.data)
               ElMessage.success(data.msg)
               _this.$router.push("/introduce")
             } else {
               // 登陆信息出现问题
+              console.log("=====")
               ElMessage.error(data.msg)
             }
 
           }).catch((error) => {
-            console.log(error)
             this.loading = false
           })
           

@@ -7,7 +7,6 @@ axios.defaults.baseURL = "http://localhost:8080/"
 // 前置拦截
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem("token")
-  console.log(token)
   if (token != null && token != undefined && token != "") {
     config.headers.common['Access-control-Expose-Headers'] = "Authorization"
     config.headers.Authorization= token
@@ -21,7 +20,7 @@ axios.interceptors.response.use(response => {
     if (res.code === 200) {
       return response
     } else {
-      ElMessage.error(res.msg, {duration: 3 * 1000})
+      ElMessage.error(res.msg)
       return Promise.reject(response.data.msg)
     }
   },
@@ -41,10 +40,10 @@ axios.interceptors.response.use(response => {
 )
 
 router.beforeEach((to, from, next) => {
-
   if (to.matched.some(record => record.meta.requireAuth)) { // 判断该路由是否需要登录权限
     const token = localStorage.getItem("token")
-    if (token) { // 判断当前的token是否存在 ； 登录存入的token
+    const userInfo = sessionStorage.getItem("userInfo")
+    if (token && userInfo) { // 判断当前的token是否存在 ； 登录存入的token
       if (to.path === '/login') {
         ElMessage.error('你已经登陆了')
       } else {

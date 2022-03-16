@@ -6,25 +6,26 @@
         <div @click="closeAllMenu()"><el-icon :size="25" class="icon-operation"> <i-operation /></el-icon></div>
         <div class="line" />
 
+
+      <!-- :default-openeds="state.defaultOpen" -->
         <el-menu
           :collapse="isCollapse"
           @open="handleOpen"
           @close="handleClose"
-          :default-openeds="state.defaultOpen"
           background-color="#222832"
           text-color="#fff"
           :router="true"
           :default-active='state.currentPath'
         >
-          <el-sub-menu index="1">
+          <el-sub-menu index="1" v-if="userInfo.useraccounttype == 0">
             <template #title>
-              <el-icon><i-menu /></el-icon>
-              <span>Dashboard</span>
+              <el-icon><i-setting /></el-icon>
+              <span>系统设置</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/introduce"><el-icon><i-data-line /></el-icon>系统介绍</el-menu-item>
-              <el-menu-item index="/dashboard"><el-icon><i-odometer /></el-icon>Dashboard</el-menu-item>
-              <el-menu-item index="/add"><i class="el-icon-plus" />添加商品</el-menu-item>
+              <el-menu-item index="/student_manage"><el-icon><i-platform /></el-icon>学生管理</el-menu-item>
+              <el-menu-item index="/teacher_manage"><el-icon><i-user /></el-icon>教师管理</el-menu-item>
+              <el-menu-item index="/laboratory_manage"><el-icon><i-school /></el-icon>实验室管理</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
           <el-sub-menu index="2">
@@ -53,7 +54,7 @@
           </el-sub-menu>
           <el-sub-menu index="4">
             <template #title>
-              <el-icon><i-setting /></el-icon>
+              <el-icon><i-menu /></el-icon>
               <span>系统管理</span>
             </template>
             <el-menu-item-group>
@@ -82,6 +83,7 @@ import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import { useRouter } from 'vue-router'
 import { pathMap, localGet } from '@/utils'
+import { fromCode } from '@/utils/validate'
 export default {
   name: 'App',
   components: {
@@ -89,17 +91,16 @@ export default {
     Footer
   },
   setup() {
-    console.log('App')
     const noMenu = ['/login']
     const router = useRouter()
     const state = reactive({
-      defaultOpen: ['1', '2', '3', '4'],
+      defaultOpen: ['1'],
       showMenu: true,
-      currentPath: '/dashboard',
-
+      currentPath: '/student_manage',
       count: {
         number: 1
-      }
+      },
+      userInfo: null,
     })
     // 监听浏览器原生回退事件
     if (window.history && window.history.pushState) {
@@ -110,13 +111,16 @@ export default {
         }
       }, false);
     }
+
+
+
     const unwatch = router.beforeEach((to, from, next) => {
       if (to.path == '/login') {
         // 如果路径是 /login 则正常执行
         next()
       } else {
         // 如果不是 /login，判断是否有 token
-        if (!localGet('token')) {
+        if (!localGet('token') && !sessionStorage.getItem("userInfo")) {
           // 如果没有，则跳至登录页面
           next({ path: '/login' })
         } else {
@@ -136,11 +140,19 @@ export default {
     }
   },
 
+  created() {
+    const user = sessionStorage.getItem("userInfo")
+    if(user) {
+      this.userInfo = JSON.parse(fromCode(user))      // 根据请求获取用户信息
+    } else {
+      this.$router.push("/login")
+    }
+  },
+
   data() {
-    
     return {
       isCollapse: true,
-
+      identity: null,
     }
   },
   methods: {
@@ -151,10 +163,15 @@ export default {
       console.log(key, keyPath)
     },
     closeAllMenu() {
-      console.log("dasfasdf")
       this.isCollapse = !this.isCollapse
-      console.log(this.isCollapse)
-    }
+    },
+    // 身份查找:
+    getIdentity() {
+      // 从localstorage 中获取用户信息
+
+    },
+
+
   }
 }
 </script>

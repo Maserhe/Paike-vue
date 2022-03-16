@@ -32,17 +32,15 @@
 
 import { onMounted, reactive, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
-import { createStore } from 'vuex'
 import { pathMap } from '@/utils'
-import axios from 'axios'
-import { localGet, localRemove } from '../utils'
+import { localRemove } from '../utils'
+import { fromCode } from '@/utils/validate'
 export default {
   name: 'Header',
   setup() {
     const router = useRouter()
-    const store = createStore()
     const state = reactive({
-      name: 'dashboard',
+      name: '首页',
       userInfo: null,
       hasBack: false
     })
@@ -50,13 +48,8 @@ export default {
       router.back()
     }
     router.afterEach((to) => {
-      console.log('to', to)
-      const { id } = to.query
       state.name = pathMap[to.name]
-      if (id && to.name == 'add') {
-        state.name = '编辑商品'
-      }
-      state.hasBack = ['level2', 'level3', 'order_detail'].includes(to.name)
+      state.hasBack = true
     })
     return {
       ...toRefs(state),
@@ -65,17 +58,14 @@ export default {
   },
   created() {
     const user = sessionStorage.getItem("userInfo")
-    if(user) {
-      this.userInfo = JSON.parse(user)
-      // 根据请求获取用户信息
+    const token = localStorage.getItem("token")
+    if(user && token) {
+      this.userInfo = JSON.parse(fromCode(user))      // 根据请求获取用户信息
     } else {
       this.$router.push("/login")
     }
   },
   methods: {
-    getUserInfo(){
-      
-    },
     logout(){
       this.$axios.get("/logout").then((res)=> {
           const data = res.data          

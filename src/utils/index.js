@@ -43,6 +43,9 @@ export const pathMap = {
     guest: '会员管理',
     order: '订单管理',
     order_detail: '订单详情',
-    account: '修改账户'
+    account: '修改账户',
+    student_manage: '学生管理',
+    teacher_manage: '教师管理',
+    laboratory_manage: '实验室管理',
   }
   
