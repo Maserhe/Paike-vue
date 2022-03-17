@@ -133,7 +133,8 @@ export default {
               // 保存用户信息
               _this.$store.commit("SET_USERINFO", data.data)
               ElMessage.success(data.msg)
-              _this.$router.push("/introduce")
+              // _this.$router.push("/introduce")
+              window.location.href="/"
             } else {
               // 登陆信息出现问题
               console.log("=====")
@@ -143,16 +144,6 @@ export default {
           }).catch((error) => {
             this.loading = false
           })
-          
-
-          // this.$store.dispatch('user/login', this.loginForm)
-          //   .then(() => {
-          //     this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-          //     this.loading = false
-          //   })
-          //   .catch(() => {
-          //     this.loading = false
-          //   })
           
         } else {
           console.log('error submit!!')

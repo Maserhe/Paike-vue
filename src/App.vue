@@ -17,7 +17,7 @@
           :router="true"
           :default-active='state.currentPath'
         >
-          <el-sub-menu index="1" v-if="userInfo.useraccounttype == 0">
+          <el-sub-menu index="1" v-if="userInfo.useraccounttype == 0" v-model="userInfo.useraccounttype">
             <template #title>
               <el-icon><i-setting /></el-icon>
               <span>系统设置</span>
@@ -112,8 +112,6 @@ export default {
       }, false);
     }
 
-
-
     const unwatch = router.beforeEach((to, from, next) => {
       if (to.path == '/login') {
         // 如果路径是 /login 则正常执行
@@ -147,12 +145,12 @@ export default {
     } else {
       this.$router.push("/login")
     }
+
   },
 
   data() {
     return {
       isCollapse: true,
-      identity: null,
     }
   },
   methods: {
@@ -165,14 +163,9 @@ export default {
     closeAllMenu() {
       this.isCollapse = !this.isCollapse
     },
-    // 身份查找:
-    getIdentity() {
-      // 从localstorage 中获取用户信息
 
-    },
+  },
 
-
-  }
 }
 </script>
 

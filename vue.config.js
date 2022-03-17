@@ -23,6 +23,7 @@ module.exports = {
         resolvers: [ElementPlusResolver()],
       }),
     ],
+    // devtool: 'clean-module-eval-source-map'
   },
 
   transpileDependencies: true,

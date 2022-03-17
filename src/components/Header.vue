@@ -41,8 +41,11 @@ export default {
     const router = useRouter()
     const state = reactive({
       name: '首页',
-      userInfo: null,
-      hasBack: false
+      hasBack: false,
+      userInfo: {
+        userrealname: '测试员',
+        useraccount: '测试'
+      }
     })
     const back = () => {
       router.back()
@@ -56,6 +59,7 @@ export default {
       back
     }
   },
+
   created() {
     const user = sessionStorage.getItem("userInfo")
     const token = localStorage.getItem("token")
@@ -65,6 +69,7 @@ export default {
       this.$router.push("/login")
     }
   },
+
   methods: {
     logout(){
       this.$axios.get("/logout").then((res)=> {
