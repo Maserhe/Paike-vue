@@ -30,22 +30,18 @@ export function localGet (key) {
 export const pathMap = {
     login: '登录',
     introduce: '系统介绍',
-    dashboard: '大盘数据',
-    add: '添加商品',
-    swiper: '轮播图配置',
-    hot: '热销商品配置',
-    new: '新品上线配置',
-    recommend: '为你推荐配置',
-    category: '分类管理',
-    level2: '分类二级管理',
-    level3: '分类三级管理',
-    good: '商品管理',
-    guest: '会员管理',
-    order: '订单管理',
-    order_detail: '订单详情',
-    account: '修改账户',
     student_manage: '学生管理',
     teacher_manage: '教师管理',
     laboratory_manage: '实验室管理',
+
+    export_schedule: '导出课表',
+    laboratory: "实验室管理",
+    laboratory_schedule: '实验室课表',
+    query_schedule: '课表查询',
+
+    schedule: '实验室课表',
+    export: '导出课表',
+    query: '课表查询',
+
   }
   

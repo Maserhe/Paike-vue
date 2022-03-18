@@ -6,7 +6,6 @@
         <div @click="closeAllMenu()"><el-icon :size="25" class="icon-operation"> <i-operation /></el-icon></div>
         <div class="line" />
 
-
       <!-- :default-openeds="state.defaultOpen" -->
         <el-menu
           :collapse="isCollapse"
@@ -17,50 +16,19 @@
           :router="true"
           :default-active='state.currentPath'
         >
-          <el-sub-menu index="1" v-if="userInfo.useraccounttype == 0" v-model="userInfo.useraccounttype">
-            <template #title>
-              <el-icon><i-setting /></el-icon>
-              <span>系统设置</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/student_manage"><el-icon><i-platform /></el-icon>学生管理</el-menu-item>
-              <el-menu-item index="/teacher_manage"><el-icon><i-user /></el-icon>教师管理</el-menu-item>
-              <el-menu-item index="/laboratory_manage"><el-icon><i-school /></el-icon>实验室管理</el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu>
-          <el-sub-menu index="2">
-            <template #title>
-              <el-icon><i-data-line /></el-icon>
-              <span>首页配置</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/swiper"><i class="el-icon-picture" />轮播图配置</el-menu-item>
-              <el-menu-item index="/hot"><i class="el-icon-star-on" />热销商品配置</el-menu-item>
-              <el-menu-item index="/new"><i class="el-icon-sell" />新品上线配置</el-menu-item>
-              <el-menu-item index="/recommend"><i class="el-icon-thumb" />为你推荐配置</el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu>
-          <el-sub-menu index="3">
-            <template #title>
-              <el-icon><i-view /></el-icon>
-              <span>模块管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/category"><i class="el-icon-menu" />分类管理</el-menu-item>
-              <el-menu-item index="/good"><i class="el-icon-s-goods" />商品管理</el-menu-item>
-              <el-menu-item index="/guest"><i class="el-icon-user-solid" />会员管理</el-menu-item>
-              <el-menu-item index="/order"><i class="el-icon-s-order" />订单管理</el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu>
-          <el-sub-menu index="4">
-            <template #title>
-              <el-icon><i-menu /></el-icon>
-              <span>系统管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/account"><i class="el-icon-lock" />修改密码</el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu>
+          <!-- 系统设置 -->
+          <el-menu-item index="/student_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-platform /></el-icon><template #title>学生管理</template></el-menu-item>
+          <el-menu-item index="/teacher_manage" v-if="userInfo.useraccounttype == 0" ><el-icon><i-user /></el-icon><template #title>教师管理</template></el-menu-item>
+          <el-menu-item index="/laboratory_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-school /></el-icon><template #title>实验室管理</template></el-menu-item>
+          <!-- 教师页面 -->
+          <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-platform /></el-icon><template #title>导出课表</template></el-menu-item>
+          <el-menu-item index="/laboratory" v-if="userInfo.useraccounttype == 1" ><el-icon><i-user /></el-icon><template #title>实验室管理</template></el-menu-item>
+          <el-menu-item index="/laboratory_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
+          <el-menu-item index="/query_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-platform /></el-icon><template #title>课表查询</template></el-menu-item>
+          <!-- 学生界面 -->
+          <el-menu-item index="/schedule" v-if="userInfo.useraccounttype == 2"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
+          <el-menu-item index="/export" v-if="userInfo.useraccounttype == 2"><el-icon><i-platform /></el-icon><template #title>导出课表</template></el-menu-item>
+          <el-menu-item index="/query" v-if="userInfo.useraccounttype == 2" ><el-icon><i-user /></el-icon><template #title>课表查询</template></el-menu-item>
         </el-menu>
       </el-aside>
       <el-container class="content">
@@ -137,7 +105,6 @@ export default {
       state
     }
   },
-
   created() {
     const user = sessionStorage.getItem("userInfo")
     if(user) {
@@ -145,9 +112,7 @@ export default {
     } else {
       this.$router.push("/login")
     }
-
   },
-
   data() {
     return {
       isCollapse: true,
@@ -219,13 +184,13 @@ export default {
     margin: 0;
     box-sizing: border-box;
   }
-  .el-menu {
+  /* .el-menu {
     border-right: none!important;
-  }
-  .el-sub-menu {
+  } */
+  /* .el-sub-menu {
     border-top: 1px solid hsla(0, 0%, 100%, .05);
     border-bottom: 1px solid rgba(0, 0, 0, .2);
-  }
+  } */
   .el-sub-menu:first-child {
     border-top: none;
   }

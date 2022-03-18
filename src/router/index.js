@@ -10,7 +10,7 @@ const routes = [
     hidden: true
   },
 
-  // 设置界面
+  // 管理员界面
   {
     path: '/student_manage',
     name: 'student_manage',
@@ -29,15 +29,53 @@ const routes = [
     component: () => import('@/views/manage/Laboratory.vue'),
     meta: { requiresAuth: true }
   },
+
+  // 教师界面
   {
-    path: '/dashboard',
-    component: () => import('@/views/dashboard/index'),
-    meta: { requiresAuth: true },
-    hidden: true
+    path: '/export_schedule',
+    name: 'export_schedule',
+    component: () => import('@/views/teacher/ExportSchedule.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/laboratory',
+    name: 'laboratory',
+    component: () => import('@/views/teacher/Laboratory.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/laboratory_schedule',
+    name: 'laboratory_schedule',
+    component: () => import('@/views/teacher/LaboratorySchedule.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/query_schedule',
+    name: 'query_schedule',
+    component: () => import('@/views/teacher/QuerySchedule.vue'),
+    meta: { requiresAuth: true }
+  },
+  // 学生界面
+  {
+    path: '/export',
+    name: 'export',
+    component: () => import('@/views/student/ExportSchedule.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/schedule',
+    name: 'schedule',
+    component: () => import('@/views/student/LaboratorySchedule.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/query',
+    name: 'query',
+    component: () => import('@/views/student/QuerySchedule.vue'),
+    meta: { requiresAuth: true }
   },
 
-
-
+  // 首页介绍界面
   {
     path: '/',
     redirect: '/introduce'
