@@ -2,7 +2,7 @@ import axios from 'axios'
 import router from './router'
 import store from './store'
 
-axios.defaults.baseURL = "http://localhost:8080/"
+axios.defaults.baseURL = "http://192.168.77.203:8080/"
 // axios.defaults.baseURL = "/"
 // 前置拦截
 axios.interceptors.request.use(config => {
@@ -28,7 +28,7 @@ axios.interceptors.response.use(response => {
     if(error.response.data) {
       error.message = error.response.data.msg
     }
-    if(error.response.status === 8888) {
+    if(error.response.data.code === 8888) {
       ElMessage.error('请登陆')
       store.commit("REMOVE_INFO")
       router.push("/login")
