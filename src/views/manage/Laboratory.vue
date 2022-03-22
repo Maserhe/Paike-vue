@@ -7,7 +7,7 @@
             <p style="margin-right: 1rem;">学院</p>
             <!-- <label slot="lable" > 学院: </label> -->
               <el-select v-model="YxsOption" placeholder="Select" @change="changeYxs" style="width: 10rem; margin-right: 1rem">
-                <el-option v-for="(item, index) in YxsList" :key="index" :label="item.dwmc" :value="item.dwh"> </el-option>
+                <el-option v-for="(item, index) in YxsList" :key="index" :label="item.dwmc" :value="item"> </el-option>
               </el-select>
               <el-button type="primary" style="display: inline-block" @click="addSysDialog">添加实验室</el-button>
           </div>
@@ -28,7 +28,7 @@
                 </template>
                 <template #default="scope" >
                     <el-button type="primary" @click="changeSysInfo(scope.row)">修改</el-button>
-                    <el-popconfirm title="确定要删除该实验室?" @confirm="deleteSysById(scope.row.id)">
+                    <el-popconfirm title="确定要删除该实验室?" @confirm="deleteSysById(scope.row.sysh)">
                       <template #reference>
                         <el-button type="danger" >删除</el-button>
                       </template>
@@ -64,13 +64,31 @@
        </el-form>
   </el-dialog>
 
-   <el-dialog v-model="addDialogVisible" title="实验室信息" width="80%" :before-close="handleClose">
-      <!-- 实验室表单, 修改实验室信息 -->
-      <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-        <el-tab-pane label="单个添加" name="first">单个添加</el-tab-pane>
-        <el-tab-pane label="单个添加" name="second">单个添加 实验室</el-tab-pane>
-      </el-tabs>
+  <!--  添加实验室的对话框 -->
+  <el-dialog v-model="addDialogVisible" title="添加实验室" width="80%" :before-close="handleClose">
+      <el-tabs v-model="activeName"  @tab-click="handleClick">
+        <el-tab-pane label="单个添加" name="first">
 
+          <el-form ref="addSysInfoRef" :model="addSysInfo" :label-position="'top'" label-width="30rem">
+            <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: true, message: '非必需填写,例如: 人工智能实验室, 不填写的话默认名称: 机房' },]">
+              <el-input v-model="addSysInfo.sysmc" type="text" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="实验室门牌号" prop="sysmph" :rules="[{ required: true, message: '必需填写,表示实验室位置,例如: 205' },]">
+              <el-input v-model="addSysInfo.sysmph" type="text" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="addSys('addSysInfoRef')">添加</el-button>
+              <el-button @click="resetForm('addSysInfoRef')">重置</el-button>
+            </el-form-item>
+          </el-form>
+          
+        </el-tab-pane>
+        <el-tab-pane label="批量添加" name="second">
+          单个添加 实验室
+
+
+        </el-tab-pane>
+      </el-tabs>
   </el-dialog>
 
   </el-card>
@@ -82,14 +100,9 @@ import { ref } from 'vue'
 export default {
 
   setup() {
-   
     const dialogVisible = ref(false)
     const addDialogVisible = ref(false)
-    const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => {
-      done()
-    
-    })}
-    
+    const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
       dialogVisible,
       handleClose,
@@ -111,6 +124,7 @@ export default {
       YxsOption: "选择学院",
       // 选择的院系所id
       YxsId: "", 
+      YxsMc: "",
 
       // 实验室信息
       SysList: [],
@@ -127,6 +141,12 @@ export default {
       // 添加实验室 对话框
       activeName: "first",
 
+      // 添加实验室
+      addSysInfo: {
+        sysmc: "",  // 实验室名称
+        sysmph: "", // 实验室门牌号
+      }
+      
 
     }
   },
@@ -163,12 +183,14 @@ export default {
       })
     },
     // 选择院系所
-    changeYxs(id) {
-      if (id) {
-        this.YxsId = id
-        this.getSysListById(id)
+    changeYxs(item) {
+      if (item.dwh) {
+        this.YxsOption = item.dwmc
+        this.YxsId = item.dwh
+        this.YxsMc = item.dwmc
+        this.getSysListById(item.dwh)
       } else {
-        ElMessage.error("请选择课程")
+        ElMessage.error("请选择学院")
       }
     },
     // 根据id获取实验室列表
@@ -186,7 +208,7 @@ export default {
         const data = res.data
         if (data.code == 200) {
           ElMessage.success("删除成功")
-          this.changeYxs(this.YxsId)
+          this.getSysListById(this.YxsId)
         } else {
           ElMessage.error("删除错误")
         }
@@ -220,9 +242,36 @@ export default {
     },
     // 添加实验室 对话框
     addSysDialog() {
+      if (!this.YxsId) {
+        ElMessage.error("请选择学院,如果旁边选择框没有选项,请刷新页面")
+        return false
+      }
       this.addDialogVisible = true
-    }
+    },
 
+    // 单个添加 实验室
+    addSys(formName) {
+      // 参数校验
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$axios.post("/weixin-syszk/addSys", {
+            sysmc: this.addSysInfo.sysmc,
+            sysmph: this.addSysInfo.sysmph,
+            yxsh: this.YxsId,
+            yxmc: this.YxsMc,
+          }).then(res => {
+            const data = res.data
+            if (data.code == 200) {
+              ElMessage.success("添加成功")
+              // 刷新实验室 
+              this.getSysListById(this.YxsId)
+            } else {
+              ElMessage.error(data.msg)
+            }
+          })
+        }
+      })
+    }
   },
   
   // 计算属性
