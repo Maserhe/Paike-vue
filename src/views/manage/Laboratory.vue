@@ -68,9 +68,8 @@
   <el-dialog v-model="addDialogVisible" title="添加实验室" width="80%" :before-close="handleClose">
       <el-tabs v-model="activeName"  @tab-click="handleClick">
         <el-tab-pane label="单个添加" name="first">
-
           <el-form ref="addSysInfoRef" :model="addSysInfo" :label-position="'top'" label-width="30rem">
-            <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: false, message: '非必需填写,例如: 人工智能实验室, 不填写的话默认名称: 机房' },]">
+            <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: true, message: '非必需填写,例如: 人工智能实验室, 不填写的话默认名称: 机房' },]">
               <el-input v-model="addSysInfo.sysmc" type="text" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="实验室门牌号" prop="sysmph" :rules="[{ required: true, message: '必需填写,表示实验室位置,例如: 205' },]">
@@ -84,12 +83,14 @@
         </el-tab-pane>
         <el-tab-pane label="批量添加" name="second">
          <div style="text-align: center"> 
-            <el-upload drag action="" :http-request="uploadCSVFile" :data="{ 'id': YxsId }">
+            <el-upload drag action="" :http-request="uploadCSVFile" :limit="1"  accept=".csv">
                 <el-icon class="el-icon--upload"><i-upload-filled /></el-icon>
                 <div class="el-upload__text">拖拽文件到这或者<em>点击上传</em></div>
-                <template #tip><div class="el-upload__tip">需要上传指定格式的csv文件,请先下载模版</div></template>
+                <template #tip><div class="el-upload__tip">需要上传指定格式的csv文件,请先下载模版,仿照着写</div></template>
             </el-upload>
-            <el-button type="primary" @click="downloadAttachRow">模版下载</el-button>
+            <el-button type="primary">
+            <a href="/addLabs.csv" download="addLabs.csv">模版下载</a>
+            </el-button>
         </div>
         </el-tab-pane>
       </el-tabs>
@@ -277,14 +278,45 @@ export default {
       })
     },
 
+    // 上传csv文件批量上传 文件
     uploadCSVFile(params) {
-      console.log(params)
+      const file = params.file
+      
+      let formData = new FormData()
+      formData.append("file", file)
+      formData.append("YxsId", this.YxsId)
+      formData.append("YxsMc", this.YxsMc)
+
+      console.log(formData)
+      this.$axios({url: "", methods: "post", data: formData, headers: { 'Content-Type': 'multipart/form-data'}}).then(res=> {
+        const data = res.data
+        if (data.code == 200) {
+          ElMessage.success("添加成功")
+          location.reload()
+        } else {
+          
+        }
+      })
+
+      // this.$axios({
+      //           url: "/user/upload",
+      //           method: 'post',
+      //           data: formData,
+      //           headers: { 'Content-Type': 'multipart/form-data'}
+      // }).then(res=> {
+          
+      //     const data = res.data
+      //     if (data.code == 200) {
+      //         ElMessage.success('添加成功', {duration: 3 * 1000})
+      //         location.reload()
+      //     } else {
+      //         return false
+      //     }
+      // })
+
+
     },
 
-    /** 下载附件 */
-    downloadAttachRow() {
-      console.log("下载")
-    },
 
   },
   

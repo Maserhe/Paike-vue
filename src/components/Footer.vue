@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <div class="left">Copyright © 2019-2021 Maserhe. All rights reserved.</div>
+    <div class="left">Copyright © 2021-2022 Maserhe. All rights reserved.</div>
     <div class="right">
       <a target="_blank" href="https://github.com/Maserhe">沈工大排实验室课管理</a>
     </div>
