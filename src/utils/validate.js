@@ -21,7 +21,7 @@ export function isExternal(path) {
  * @returns {Boolean}
  */
 export function validUsername(str) {
-  if (str.trim() && str.trim().length > 2) {
+  if (str.trim() && str.trim().length > 0) {
     return true
   } 
   return false

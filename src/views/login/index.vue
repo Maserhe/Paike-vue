@@ -69,7 +69,7 @@ export default {
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 3) {
+      if (value.length == 0) {
         callback(new Error('请输入正确的密码'))
       } else {
         callback()
@@ -77,8 +77,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'admin'
+        username: 'liu',
+        password: 'liu'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],

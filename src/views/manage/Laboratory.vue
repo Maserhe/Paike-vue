@@ -5,8 +5,7 @@
         <el-scrollbar>
           <div style="display: flex; align-items: center;">
             <p style="margin-right: 1rem;">学院</p>
-            <!-- <label slot="lable" > 学院: </label> -->
-              <el-select v-model="YxsOption" placeholder="Select" @change="changeYxs" style="width: 10rem; margin-right: 1rem">
+              <el-select v-model="YxsOption" placeholder="Select" @change="changeYxs" style="margin-right: 1rem">
                 <el-option v-for="(item, index) in YxsList" :key="index" :label="item.dwmc" :value="item"> </el-option>
               </el-select>
               <el-button type="primary" style="display: inline-block" @click="addSysDialog">添加实验室</el-button>
@@ -288,33 +287,15 @@ export default {
       formData.append("YxsMc", this.YxsMc)
 
       console.log(formData)
-      this.$axios({url: "", methods: "post", data: formData, headers: { 'Content-Type': 'multipart/form-data'}}).then(res=> {
+      this.$axios({url: "/weixin-syszk/addSYSList", method: "post", data: formData, headers: { 'Content-Type': 'multipart/form-data'}}).then(res=> {
         const data = res.data
         if (data.code == 200) {
           ElMessage.success("添加成功")
           location.reload()
         } else {
-          
+          ElMessage.error(data.msg)
         }
       })
-
-      // this.$axios({
-      //           url: "/user/upload",
-      //           method: 'post',
-      //           data: formData,
-      //           headers: { 'Content-Type': 'multipart/form-data'}
-      // }).then(res=> {
-          
-      //     const data = res.data
-      //     if (data.code == 200) {
-      //         ElMessage.success('添加成功', {duration: 3 * 1000})
-      //         location.reload()
-      //     } else {
-      //         return false
-      //     }
-      // })
-
-
     },
 
 
@@ -336,4 +317,10 @@ export default {
   height: 10rem;
   width: 16rem;
 }
+
+</style>
+
+<style scoped>
+
+
 </style>

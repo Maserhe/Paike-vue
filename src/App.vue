@@ -21,9 +21,9 @@
           <el-menu-item index="/teacher_manage" v-if="userInfo.useraccounttype == 0" ><el-icon><i-user /></el-icon><template #title>教师管理</template></el-menu-item>
           <el-menu-item index="/laboratory_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-school /></el-icon><template #title>实验室管理</template></el-menu-item>
           <!-- 教师页面 -->
+          <el-menu-item index="/laboratory_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
           <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-platform /></el-icon><template #title>导出课表</template></el-menu-item>
           <el-menu-item index="/laboratory" v-if="userInfo.useraccounttype == 1" ><el-icon><i-user /></el-icon><template #title>实验室管理</template></el-menu-item>
-          <el-menu-item index="/laboratory_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
           <el-menu-item index="/query_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-platform /></el-icon><template #title>课表查询</template></el-menu-item>
           <!-- 学生界面 -->
           <el-menu-item index="/schedule" v-if="userInfo.useraccounttype == 2"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>

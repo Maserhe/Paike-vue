@@ -1,8 +1,10 @@
 <template>
   <div class="header">
     <div class="left">
-      <i v-if="hasBack" class="el-icon-back" @click="back"></i>
-      <span style="font-size: 20px">沈工大实验室管理</span>
+      <div style="display: flex; align-items: center;">
+        <el-icon  v-if="hasBack"  :size="30"  class="el-icon-back" @click="back"><i-caret-left /></el-icon>
+        <a style="font-size: 1rem">沈工大实验室管理</a>
+      </div>
     </div>
     <div class="right">
       <el-popover
@@ -101,9 +103,9 @@ export default {
   }
   .el-icon-back {
     border: 1px solid #e9e9e9;
-    padding: 4px;
+    padding: 1px;
     border-radius: 50px;
-    margin-right: 10px;
+    margin-right: 1rem;
   }
   .right > div > .icon{
     font-size: 18px;
