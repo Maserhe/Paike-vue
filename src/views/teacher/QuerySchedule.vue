@@ -1,7 +1,8 @@
 <template>
   <el-card class="account-container">
-      <h1>查询课程表</h1>
-    
+      <h3>查询课程表</h3>
+      <el-divider />
+
   </el-card>
 </template>
 
