@@ -1,6 +1,7 @@
 <template>
   <el-card class="account-container">
-      <h1>导出课表</h1>
+      <h3>导出课表</h3>
+      <el-divider />
     
   </el-card>
 </template>
