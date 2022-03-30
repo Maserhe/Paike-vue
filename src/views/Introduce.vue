@@ -1,6 +1,6 @@
 <template>
   <el-card class="account-container">
-    <h1>系统简介</h1>
+    <h1>系统设计需求</h1>
 <p>确定需要的数据库表：</p>
 
 <p>1， 院系所表 YXS</p>

@@ -25,7 +25,7 @@
             <el-select v-model="BjOption" placeholder="Select" @change="changeBj" style="margin-right: 1rem">
               <el-option v-for="(item, index) in BjList" :key="index" :label="item.bj" :value="item"> </el-option>
             </el-select>
-              <el-button type="primary" style="display: inline-block; width: 3rem" @click="queryBjLabSchedule">查询</el-button>
+              <el-button type="primary" @click="queryBjLabSchedule">查询</el-button>
           </div>
       </el-scrollbar>
       <br/>
@@ -241,6 +241,12 @@ export default {
 </script>
 
 <style>
+
+
+.el-button {
+    /* display: inline-flex; */
+  width: 6rem !important;
+}
 
 .el-select .el-input__inner {
     width: 9rem;

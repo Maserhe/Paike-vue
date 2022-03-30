@@ -1,7 +1,7 @@
 
 <template>
   <div class="layout">
-    <el-container v-if="state.showMenu" class="container">
+    <el-container v-if="state.showMenu" class=" ">
       <el-aside  class="aside" width="collapse"> 
         <div @click="closeAllMenu()"><el-icon :size="25" class="icon-operation"> <i-operation /></el-icon></div>
         <div class="line" />
@@ -151,6 +151,7 @@ export default {
     -ms-overflow-style: none;
     overflow: -moz-scrollbars-none;
     padding: 0%;
+    height: 100vh;
   }
   .aside::-webkit-scrollbar {
     display: none;
@@ -169,7 +170,7 @@ export default {
   .main {
     height: calc(100vh - 100px);
     overflow: auto;
-    padding: 10px;
+    padding: 1rem;
   }
   .icon-operation {
     height: 2em;
@@ -185,9 +186,9 @@ export default {
     margin: 0;
     box-sizing: border-box;
   }
-  /* .el-menu {
+  .el-menu {
     border-right: none!important;
-  } */
+  }
   /* .el-sub-menu {
     border-top: 1px solid hsla(0, 0%, 100%, .05);
     border-bottom: 1px solid rgba(0, 0, 0, .2);
@@ -209,4 +210,11 @@ export default {
   .el-popper__arrow {
     display: none;
   }
+  .el-menu--collapse {
+      width: 2rem;
+  }
+  .el-menu-item .el-menu-tooltip__trigger {
+      padding: 0 12px;
+  }
+
 </style>
