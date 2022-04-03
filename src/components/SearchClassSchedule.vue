@@ -21,6 +21,11 @@
               <el-option v-for="(item, index) in ZyList" :key="index" :label="item.zymc" :value="item"> </el-option>
             </el-select>
 
+            <p style="margin-right: 1rem;">年级</p>
+            <el-select v-model="RxnfOption" placeholder="Select" @change="changeRxnf" style="margin-right: 1rem">
+              <el-option v-for="(item, index) in RxnfList" :key="index" :label="item + '级'" :value="item"> </el-option>
+            </el-select>
+
             <p style="margin-right: 1rem;">班级</p>
             <el-select v-model="BjOption" placeholder="Select" @change="changeBj" style="margin-right: 1rem">
               <el-option v-for="(item, index) in BjList" :key="index" :label="item.bj" :value="item"> </el-option>
@@ -94,6 +99,10 @@ export default {
       ZyOption: "选择专业",
       ZyId: "",
 
+      // 年级选择 根据班级的 入学年份
+      RxnfList: [],
+      RxnfOption: "选择年级",
+      Rxnf: "",
 
 
       // 班级选择
@@ -151,9 +160,19 @@ export default {
       })
     },
 
+    // 获取入学年份 列表
+    getRxnfListByZyId(id) {
+      this.$axios.post("/weixin-bjmc/getRxnfList?ZyId=" + id).then(res => {
+        const data = res.data
+        if (data.code == 200) {
+          this.RxnfList = data.data
+        }
+      })
+    },
+
     // 获取班级列表
-    getBjListByZyId(id) {
-      this.$axios.post("/weixin-bjmc/getBjList?ZyId=" + id).then(res => {
+    getBjListByZyId(id, rxnf) {
+      this.$axios.post("/weixin-bjmc/getBjList?ZyId=" + id + "&Rxnf=" + rxnf).then(res => {
         const data = res.data
         if (data.code == 200) {
           this.BjList = data.data
@@ -188,21 +207,37 @@ export default {
         ElMessage.error("请先选择学期")
       }
     },
+
     // 选择专业列表
     changeZy(item) {
       if (item) {
         this.ZyOption = item.zymc
         this.ZyId = item.zyh
 
-        // 修改班级列表
+        // 修改入学年份
+        this.RxnfList = []
+        this.RxnfOption = "选择年级"
+        this.Rxnf = ""
+        // 获取 入学年级
+        this.getRxnfListByZyId(item.zyh)
+       
+      }
+    },
+
+    // 选择入学年份
+    changeRxnf(item) {
+      if (item) {
+        this.Rxnf = item
+
         this.BjList = []
         this.BjOption = "选择班级"
         this.BjId = ""
 
         // 根据专业号 获取班级
-        this.getBjListByZyId(item.zyh)
+        this.getBjListByZyId(this.ZyId, item)
       }
     },
+
     // 选择班级
     changeBj(item) {
       if (item) {
@@ -238,7 +273,7 @@ export default {
 }
 
 .el-select .el-input__inner {
-    width: 9rem;
+    width: 8rem;
 }
 </style>
 <style scoped>

@@ -19,7 +19,7 @@
 
             <p style="margin-right: 1rem;">机房</p>
             <el-select v-model="SysOption" placeholder="Select" @change="changeSys" style="margin-right: 1rem">
-              <el-option v-for="(item, index) in SysList" :key="item.sysmph" :label="item.sysmph" :value="item"> </el-option>
+              <el-option v-for="(item, index) in SysList" :key="index" :label="item.sysmph" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">周次</p>
@@ -65,13 +65,41 @@
         </div>
       </div>
 
+    <!-- 弹窗 -->
+    <el-dialog v-model="dialogVisible" title="排课管理" width="80%" :before-close="handleClose">
+      <!-- 实验室表单, 修改实验室信息 -->
+      学期: {{ Xnxqh }}
+      <br/>
+      学院: {{ YxsMc }}
+      <br/>
+     实验室: {{ SysId }} 实验室号 {{ Sysmph }}
+      <br/>
+     周次: {{ ZcId }}
+      <br/>
+     天: {{ thatDay }}
+      <br/>
+      节: {{ thatSection  }}
+
+  </el-dialog>
+
+
   </el-card>
 </template>
 
 <script>
 import { ElMessage } from 'element-plus'
 import { fromCode } from '@/utils/validate'
+import { ref } from 'vue'
 export default {
+
+  setup() {
+    const dialogVisible = ref(false)
+    const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
+    return {
+      dialogVisible,
+      handleClose,
+    }
+  },
 
   name: "SearchLabsSchedule",
   data() {
@@ -95,12 +123,20 @@ export default {
         SysList: [],
         SysId: "",
         SysOption: "选择实验室",
+        Sysmph: "",
 
 
         // 选择周次
         ZcId: "",
         ZcOption: "选择周次",
+
+
+        // 排课的 时间， 周几 ， 第几节
+        thatDay: "",
+        thatSection: "",
         
+        // 备注
+        bz: "",
 
         // 排课
         sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节"],
@@ -169,6 +205,7 @@ export default {
         this.SysList = []
         this.SysOption = "选择实验室"
         this.SysId = ""
+        this.Sysmph = ""
 
         this.getSysListById(this.YxsId)
       } else {
@@ -180,11 +217,13 @@ export default {
     changeSys(item) {
       this.SysOption = item.sysmph
       this.SysId = item.sysh
+      this.Sysmph = item.sysmph
     },
 
     // 选择周次
     changeZc(item) {
-        console.log(item)
+      this.ZcId = item
+      // 打开 弹窗
     },
 
 
@@ -225,7 +264,18 @@ export default {
     },
     // 点击排课
     paikeButton(index, chindex) {
-      console.log(index, chindex)
+      // 开始选课, 打开弹窗
+      // 检测必要参数 是否都存在， 否则打不开对话框
+      if(this.Xnxqh && this.Sysmph && this.SysId && this.YxsMc && this.YxsId) {
+        console.log(index, chindex)
+        this.thatDay = index + 1
+        this.thatSection = chindex
+        this.bz = ""
+        this.dialogVisible = true
+        // alert("周" + (index + 1) + "第" + chindex + "节")
+      } else {
+        ElMessage.error("请完成上面的选择")
+      }
     }
   }
 }
