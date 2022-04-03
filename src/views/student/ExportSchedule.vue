@@ -1,6 +1,6 @@
 <template>
   <el-card class="account-container">
-      <h3>导出课表</h3>
+      <h3>导出课程表</h3>
       <el-divider />
     
   </el-card>
