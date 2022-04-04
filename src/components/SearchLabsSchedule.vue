@@ -70,7 +70,7 @@
       <!-- 实验室表单, 修改实验室信息 -->
       学期: {{ Xnxqh }}
       <br/>
-      学院: {{ YxsMc }}
+      学院: {{ YxsMc }} 院系所号 {{ YxsId }}
       <br/>
      实验室: {{ SysId }} 实验室号 {{ Sysmph }}
       <br/>
@@ -79,6 +79,12 @@
      天: {{ thatDay }}
       <br/>
       节: {{ thatSection  }}
+    <el-divider />
+    查询老师的课程
+    班级的 年级
+    查询教师上课的班级
+
+    学年学期 + 教师 id
 
   </el-dialog>
 
@@ -141,6 +147,7 @@ export default {
         // 排课
         sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节"],
         weeks: ["周一", "周二", "周三", "周四", "周五","周六","周日"],
+        // 返回 七个 对象
         courses: [
           [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },
           {}, {},  { "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
