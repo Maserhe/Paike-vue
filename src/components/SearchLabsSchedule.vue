@@ -85,7 +85,19 @@
     查询教师上课的班级
 
     学年学期 + 教师 id
-
+    <el-divider />
+    <br/>
+    <div style="display: flex; align-items: center;">
+      <p style="margin-right: 1rem;">选择课程</p>
+      <el-select v-model="KcOption" placeholder="Select" @change="changeKc" style="margin-right: 1rem">
+        <el-option v-for="(item, index) in getKcList" :key="index" :label="item" :value="item"> </el-option>
+      </el-select>
+    </div>
+    <br/>
+      <p style="margin-right: 1rem;">选择班级</p>
+      <el-select  v-model="BjOption" multiple placeholder="选择班级" >
+        <el-option v-for="(item, index) in Bjlist" :key="item.bh" :label="item.bjmc" :value="item"> </el-option>
+      </el-select>
   </el-dialog>
 
 
@@ -96,14 +108,17 @@
 import { ElMessage } from 'element-plus'
 import { fromCode } from '@/utils/validate'
 import { ref } from 'vue'
+
 export default {
 
   setup() {
     const dialogVisible = ref(false)
+    const BjOption = ref([])
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
       dialogVisible,
       handleClose,
+      BjOption
     }
   },
 
@@ -154,6 +169,17 @@ export default {
           [],[],[],[],[],
           [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
         ],
+
+        // 选择课程
+        Kcmc: "",
+        KcOption: "选择课程",
+
+        // 班级列表
+        Bjlist: [{"bh":"bh1","bjmc":"计算机1801"},{"bh":"bh2","bjmc":"计算机1802"}], 
+        // BjOption: [],
+
+        // 课程和 班级 列表
+        KcAndBjList: [],
 
       }
   },
@@ -233,6 +259,34 @@ export default {
       // 打开 弹窗
     },
 
+    // 选择课程
+    changeKc(item) {
+      this.kcmc = item
+      // const arr = this.KcAndBjList.filter(i => {return i.kcmc == this.kcmc})
+      // if (arr.length == 1) {
+      //   this.Bjlist = arr[0].classList
+      // }
+    },
+
+    // 选择班级
+    changeBj(item) {
+      console.log(item)
+    },
+
+    // 根据学期号 和 教师号 获取课程 以及班级
+    getKcAndBjList(Xnxqh, Jgh) {
+      
+      this.$axios.post("/weixin-jskb/getjskb", {
+        "Xnxqh": Xnxqh,
+        "Jgh": Jgh
+      }).then(res => {
+        const data = res.data
+        if (data.code == 200) {
+          this.KcAndBjList = data.data
+        }
+      })
+    },
+
 
     // 根据id获取实验室列表
     getSysListById(id) {
@@ -254,6 +308,10 @@ export default {
         console.log(this.YxsId, this.YxsList)
         console.log("++++++++++++++")
         console.log(this.SysId, this.SysList)
+
+        this.getKcAndBjList(this.Xnxqh, this.userInfo.useraccount)
+
+
       } else {
         ElMessage.error("请完成选择")
       }
@@ -284,14 +342,19 @@ export default {
         ElMessage.error("请完成上面的选择")
       }
     }
+  },
+  computed: {
+    getKcList() {
+      return this.KcAndBjList.map(item => {return item.kcmc})
+    },
   }
 }
 </script>
 
 <style>
-.el-select .el-input__inner {
+/* .el-select .el-input__inner {
     width: 9rem;
-}
+} */
 </style>
 <style scoped>
 

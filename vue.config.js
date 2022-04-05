@@ -14,6 +14,10 @@ module.exports = {
   //     patterns: []
   //   }
   // }
+  devServer: {
+    port: 3000
+  },
+
   configureWebpack: {
     plugins: [
       AutoImport({
