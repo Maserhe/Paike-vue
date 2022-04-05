@@ -8,26 +8,26 @@
       <el-scrollbar :always="true">
           <div style="display: flex; align-items: center;">
             <p style="margin-right: 1rem;">学期</p>
-            <el-select v-model="XnxqOption" placeholder="Select" @change="changeXnxq" style="margin-right: 1rem">
-              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.qsrq" :value="item.xnxqh"> </el-option>
+            <el-select v-model="XnxqOption" placeholder="选择学期" @change="changeXnxq" style="margin-right: 1rem">
+              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.qsrq" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">学院</p>
-            <el-select v-model="YxsOption" placeholder="Select" @change="changeYxs" style="margin-right: 1rem">
+            <el-select v-model="YxsOption" placeholder="选择学院" @change="changeYxs" style="margin-right: 1rem">
               <el-option v-for="(item, index) in YxsList" :key="index" :label="item.dwmc" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">机房</p>
-            <el-select v-model="SysOption" placeholder="Select" @change="changeSys" style="margin-right: 1rem">
+            <el-select v-model="SysOption" placeholder="选择机房" @change="changeSys" style="margin-right: 1rem">
               <el-option v-for="(item, index) in SysList" :key="index" :label="item.sysmph" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">周次</p>
-            <el-select v-model="ZcOption" placeholder="Select" @change="changeZc" style="margin-right: 1rem">
+            <el-select v-model="ZcOption" placeholder="选择周次" @change="changeZc" style="margin-right: 1rem">
               <el-option v-for="(item, index) of 20" :key="index" :label="'第' + item + '周'" :value="item"> </el-option>
             </el-select>
 
-            <el-button type="primary" style="display: inline-block; width: 3rem" @click="queryLabSchedule">查询</el-button>
+            <!-- <el-button type="primary" style="display: inline-block; width: 3rem" @click="queryLabSchedule">查询</el-button> -->
           </div>
       </el-scrollbar>
       <br/>
@@ -68,13 +68,13 @@
     <!-- 弹窗 -->
     <el-dialog v-model="dialogVisible" title="排课管理" width="80%" :before-close="handleClose">
       <!-- 实验室表单, 修改实验室信息 -->
-      学期: {{ Xnxqh }}
+      学期: {{ Xnxq }}
       <br/>
-      学院: {{ YxsMc }} 院系所号 {{ YxsId }}
+      学院: {{ Yxs }} 
       <br/>
-     实验室: {{ SysId }} 实验室号 {{ Sysmph }}
+     实验室: {{ Sys }} 
       <br/>
-     周次: {{ ZcId }}
+     周次: {{ ZcOption }}
       <br/>
      天: {{ thatDay }}
       <br/>
@@ -89,17 +89,32 @@
     <br/>
     <div style="display: flex; align-items: center;">
       <p style="margin-right: 1rem;">选择课程</p>
-      <el-select v-model="KcOption" placeholder="Select" @change="changeKc" style="margin-right: 1rem">
+      <el-select v-model="KcOption" placeholder="选择课程" @change="changeKc" style="margin-right: 1rem">
         <el-option v-for="(item, index) in getKcList" :key="index" :label="item" :value="item"> </el-option>
       </el-select>
     </div>
     <br/>
+    <div style="display: flex; align-items: center;">
       <p style="margin-right: 1rem;">选择班级</p>
-      <el-select  v-model="BjOption" multiple placeholder="选择班级" >
-        <el-option v-for="(item, index) in Bjlist" :key="item.bh" :label="item.bjmc" :value="item"> </el-option>
+      <el-select  v-model="BjOption" multiple placeholder="选择班级" @change="changeBj" style="margin-right: 1rem">
+        <el-option v-for="(item, index) in Bjlist" :key="item.bh" :label="item.bjmc" :value="item.bh"> </el-option>
       </el-select>
+    </div>
+    <br/>
+    <div style="display: flex; align-items: center;">
+      <p style="margin-right: 1rem;">备注说明</p>
+      <el-input  style="margin-right: 1rem"
+        v-model="bz"
+        :autosize="{ minRows: 2, maxRows: 4 }"
+        type="textarea"
+        placeholder="非必需输入"
+      />
+    </div>
+    <br/>
+    <div style="text-align: center">
+      <el-button size="large" type="primary" style="width: 6rem">确定</el-button>
+    </div>
   </el-dialog>
-
 
   </el-card>
 </template>
@@ -113,12 +128,23 @@ export default {
 
   setup() {
     const dialogVisible = ref(false)
+    const KcOption = ref([])
     const BjOption = ref([])
+    const XnxqOption = ref([])
+    const YxsOption = ref([])
+    const SysOption = ref([])
+    const ZcOption = ref([])
+
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
       dialogVisible,
       handleClose,
-      BjOption
+      XnxqOption,
+      YxsOption,
+      SysOption,
+      ZcOption,
+      KcOption,
+      BjOption,
     }
   },
 
@@ -130,27 +156,15 @@ export default {
 
         // 学年学期信息
         XnxqList: [],
-        XnxqOption: "选择学期",
-        Xnxqh: "",
+        Xnxq: {},
 
         // 院系所信息
         YxsList: [],
-        YxsOption: "选择学院",
-        // 选择的院系所id
-        YxsId: "", 
-        YxsMc: "",
+        Yxs: {}, 
 
         // 选择实验室
         SysList: [],
-        SysId: "",
-        SysOption: "选择实验室",
-        Sysmph: "",
-
-
-        // 选择周次
-        ZcId: "",
-        ZcOption: "选择周次",
-
+        Sys: {},
 
         // 排课的 时间， 周几 ， 第几节
         thatDay: "",
@@ -162,31 +176,29 @@ export default {
         // 排课
         sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节"],
         weeks: ["周一", "周二", "周三", "周四", "周五","周六","周日"],
+
         // 返回 七个 对象
+        // courses: [
+        //   [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },
+        //   {}, {},  { "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
+        //   [],[],[],[],[],
+        //   [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
+        // ],
+
         courses: [
-          [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },
-          {}, {},  { "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
-          [],[],[],[],[],
-          [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
+          [],[],[],[],[],[],[]
         ],
 
-        // 选择课程
-        Kcmc: "",
-        KcOption: "选择课程",
-
         // 班级列表
-        Bjlist: [{"bh":"bh1","bjmc":"计算机1801"},{"bh":"bh2","bjmc":"计算机1802"}], 
-        // BjOption: [],
+        Bjlist: [], 
 
         // 课程和 班级 列表
         KcAndBjList: [],
-
       }
   },
 
 
   created() {
-
     const user = sessionStorage.getItem("userInfo")
     if(user) {
       this.userInfo = JSON.parse(fromCode(user))      // 根据请求获取用户信息
@@ -209,6 +221,16 @@ export default {
         }
       })
     },
+    
+    // 选择学年
+    changeXnxq() {
+      this.Xnxq = JSON.parse(JSON.stringify(this.XnxqOption))
+      this.XnxqOption = this.Xnxq.qsrq
+
+      if (!this.YxsList.length) {
+        this.getYxsList()
+      }
+    },
 
     // 获取所有院系所信息
     getYxsList() {
@@ -220,62 +242,48 @@ export default {
       })
     },
 
-    // 选择学年
-    changeXnxq(item) {
-      this.Xnxqh = item
-      if (!this.YxsList.length) {
-        this.getYxsList()
-      }
-    },
-
     // 选择院系所
-    changeYxs(item) {
-      if (item.dwh) {
-        this.YxsOption = item.dwmc
-        this.YxsId = item.dwh
-        this.YxsMc = item.dwmc
-        // 获取实验室列表
-        this.SysList = []
-        this.SysOption = "选择实验室"
-        this.SysId = ""
-        this.Sysmph = ""
-
-        this.getSysListById(this.YxsId)
-      } else {
-        ElMessage.error("请先选择学期")
-      }
+    changeYxs() {
+      this.Yxs = JSON.parse(JSON.stringify(this.YxsOption))
+      this.YxsOption = this.Yxs.dwmc
+      this.SysOption = []
+      this.getSysListById(this.Yxs.dwh)
     },
 
     // 选择实验室
-    changeSys(item) {
-      this.SysOption = item.sysmph
-      this.SysId = item.sysh
-      this.Sysmph = item.sysmph
+    changeSys() {
+      this.Sys = JSON.parse(JSON.stringify(this.SysOption))
+      this.SysOption = this.Sys.sysmph
+      this.ZcOption = []
+      // 查询老师的 课程
+      if (!this.KcAndBjList.length) {
+        this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
+      }
     },
 
     // 选择周次
-    changeZc(item) {
-      this.ZcId = item
-      // 打开 弹窗
+    changeZc() {
+      console.log(this.ZcOption)
+      // 查询 这一周的 课程
+
     },
 
     // 选择课程
-    changeKc(item) {
-      this.kcmc = item
-      // const arr = this.KcAndBjList.filter(i => {return i.kcmc == this.kcmc})
-      // if (arr.length == 1) {
-      //   this.Bjlist = arr[0].classList
-      // }
+    changeKc() {
+      const arr = this.KcAndBjList.filter(i => {return i.kcmc == this.KcOption})
+      if (arr.length == 1) {
+        this.Bjlist = arr[0].classList
+      }
     },
 
     // 选择班级
     changeBj(item) {
+      console.log(this.BjOption)
       console.log(item)
     },
 
     // 根据学期号 和 教师号 获取课程 以及班级
     getKcAndBjList(Xnxqh, Jgh) {
-      
       this.$axios.post("/weixin-jskb/getjskb", {
         "Xnxqh": Xnxqh,
         "Jgh": Jgh
@@ -287,7 +295,6 @@ export default {
       })
     },
 
-
     // 根据id获取实验室列表
     getSysListById(id) {
       this.$axios.get("/weixin-syszk/getById?id=" + id).then(res=> {
@@ -298,24 +305,6 @@ export default {
       })
     },
 
-
-    // 点击查询
-    queryLabSchedule() {
-      if (this.Xnxqh && this.YxsId && this.SysId) {
-        console.log("++++++++++++++")
-        console.log(this.Xnxqh, this.XnxqList)
-        console.log("++++++++++++++")
-        console.log(this.YxsId, this.YxsList)
-        console.log("++++++++++++++")
-        console.log(this.SysId, this.SysList)
-
-        this.getKcAndBjList(this.Xnxqh, this.userInfo.useraccount)
-
-
-      } else {
-        ElMessage.error("请完成选择")
-      }
-    },
     // 查看该课程的相关详情
     toScanDetail(item, idx) {
       var con = `<div style="width:180px;text-align:left!important;margin:0 auto;color:#999;font-size:16px">课程名称：${item.lessonsName}<br/>上课时间：${item.lessonsTime}<br/>上课地点：${item.lessonsAddress}<br/>授课老师：${item.lessonsTeacher}<br/>课程课时：${item.lessonsRemark}</div>`;
@@ -329,20 +318,22 @@ export default {
     },
     // 点击排课
     paikeButton(index, chindex) {
-      // 开始选课, 打开弹窗
       // 检测必要参数 是否都存在， 否则打不开对话框
-      if(this.Xnxqh && this.Sysmph && this.SysId && this.YxsMc && this.YxsId) {
-        console.log(index, chindex)
+      if(this.XnxqOption && this.YxsOption && this.SysOption && this.ZcOption && this.KcAndBjList) {
         this.thatDay = index + 1
         this.thatSection = chindex
         this.bz = ""
+        this.KcOption = []
+        this.BjOption  =  []
+        this.Bjlist = []
+
         this.dialogVisible = true
-        // alert("周" + (index + 1) + "第" + chindex + "节")
       } else {
-        ElMessage.error("请完成上面的选择")
+        ElMessage.error("请完成上面的选择,并点击查询")
       }
     }
   },
+
   computed: {
     getKcList() {
       return this.KcAndBjList.map(item => {return item.kcmc})
