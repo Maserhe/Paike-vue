@@ -2,10 +2,10 @@ import axios from 'axios'
 import router from './router'
 import store from './store'
 
-axios.defaults.baseURL = "http://81.68.195.233:8899/"
+// axios.defaults.baseURL = "http://81.68.195.233:8899/"
 // axios.defaults.baseURL = "http://192.168.77.203:8080/"
 // axios.defaults.baseURL = "http://localhost:8080/"
-// axios.defaults.baseURL = "/"
+axios.defaults.baseURL = "/"
 // 前置拦截
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem("token")

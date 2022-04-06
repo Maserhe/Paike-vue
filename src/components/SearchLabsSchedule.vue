@@ -45,10 +45,13 @@
                 <!-- 学生界面 -->
                 <td v-for="chindex of 5" :key="chindex">
                   <div style v-if="courses[index][chindex - 1] &&  Object.keys(courses[index][chindex - 1]).length > 0 " @click="toScanDetail(courses[index][chindex - 1])">
-                    {{ courses[index][chindex - 1].lessonsName }} <br />
-                    {{ courses[index][chindex - 1].lessonsTeacher }}
+                    教师: {{ courses[index][chindex - 1].jgmc }}
                     <br />
-                    {{ courses[index][chindex - 1].lessonsAddress }}
+                    课程: {{ courses[index][chindex - 1].kcmc }}
+                   <br />
+                    班级: {{ courses[index][chindex - 1].bjmcList.join('、')}}
+                   <br/>
+                    备注: {{ courses[index][chindex - 1].bz }}
                   </div>
 
                   <div class="paike" v-else-if="userInfo.useraccounttype == 1" @click="paikeButton(index, chindex)">
@@ -112,7 +115,7 @@
     </div>
     <br/>
     <div style="text-align: center">
-      <el-button size="large" type="primary" style="width: 6rem">确定</el-button>
+      <el-button size="large" type="primary" style="width: 6rem" @click="addPaikeButton">确定</el-button>
     </div>
   </el-dialog>
 
@@ -209,7 +212,9 @@ export default {
   },
 
   methods: {
-
+    initcourse() {
+      this.courses = [ [],[],[],[],[],[],[] ]
+    },
     // 获取 学期学年列表
     getXnxqList() {
       this.$axios.get("/weixin-ggjxzl/getXnxqList").then(res => {
@@ -226,7 +231,7 @@ export default {
     changeXnxq() {
       this.Xnxq = JSON.parse(JSON.stringify(this.XnxqOption))
       this.XnxqOption = this.Xnxq.qsrq
-
+      this.initcourse()
       if (!this.YxsList.length) {
         this.getYxsList()
       }
@@ -244,17 +249,19 @@ export default {
 
     // 选择院系所
     changeYxs() {
+      this.initcourse()
       this.Yxs = JSON.parse(JSON.stringify(this.YxsOption))
       this.YxsOption = this.Yxs.dwmc
-      this.SysOption = []
+      this.SysOption = ""
       this.getSysListById(this.Yxs.dwh)
     },
 
     // 选择实验室
     changeSys() {
+      this.initcourse()
       this.Sys = JSON.parse(JSON.stringify(this.SysOption))
       this.SysOption = this.Sys.sysmph
-      this.ZcOption = []
+      this.ZcOption = ""
       // 查询老师的 课程
       if (!this.KcAndBjList.length) {
         this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
@@ -265,7 +272,7 @@ export default {
     changeZc() {
       console.log(this.ZcOption)
       // 查询 这一周的 课程
-
+      this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
     },
 
     // 选择课程
@@ -305,10 +312,24 @@ export default {
       })
     },
 
+    // 获取 课程表
+    getSysPaikeTable(xnxq, kkzc, sysh) {
+      this.$axios.post("/weixin-sysxk/sysxkTable", {
+        "xnxq01id": this.Xnxq.xnxqh,
+        "kkzc": kkzc,
+        "sysh": sysh
+      }).then(res => {
+        const data = res.data
+        if (data.code == 200) {
+          this.courses = data.data
+        }
+      })
+    },   
+
     // 查看该课程的相关详情
     toScanDetail(item, idx) {
-      var con = `<div style="width:180px;text-align:left!important;margin:0 auto;color:#999;font-size:16px">课程名称：${item.lessonsName}<br/>上课时间：${item.lessonsTime}<br/>上课地点：${item.lessonsAddress}<br/>授课老师：${item.lessonsTeacher}<br/>课程课时：${item.lessonsRemark}</div>`;
-      if (item.lessonsName) {
+      var con = `<div style="width:200px;text-align:left!important;margin:0 auto;color:#999;font-size:14px">学院：${this.Yxs.dwmc}<br/>地点：${item.sysmph}<br/>课程：${item.kcmc}<br/>老师：${item.jgmc}<br/>班级：${item.bjmcList.join('、')}</div>`;
+      if (this.Yxs.dwmc) {
         ElMessage({
           type: 'success',
           dangerouslyUseHTMLString: true,
@@ -316,6 +337,7 @@ export default {
         })
       }
     },
+
     // 点击排课
     paikeButton(index, chindex) {
       // 检测必要参数 是否都存在， 否则打不开对话框
@@ -323,21 +345,59 @@ export default {
         this.thatDay = index + 1
         this.thatSection = chindex
         this.bz = ""
-        this.KcOption = []
-        this.BjOption  =  []
+        this.KcOption = ""
+        this.BjOption  =  ""
         this.Bjlist = []
 
         this.dialogVisible = true
       } else {
         ElMessage.error("请完成上面的选择,并点击查询")
       }
-    }
+    },
+
+    // 提交排课按钮
+    addPaikeButton() {
+      // 检验参数
+      if (this.KcOption && this.BjOption && this.BjOption.length != 0) {
+        this.$axios.post("/weixin-sysxk/addSysxk", {
+          "xnxq01id": this.Xnxq.xnxqh,
+          "kkzc": this.ZcOption,
+          "kksjmx": this.thatDay + "-" + this.thatSection,
+          "kcmc": this.KcOption,
+          "jgmc": this.userInfo.userrealname,
+          "sysh": this.Sys.sysh,
+          "sysmph": this.Sys.sysmph,
+          "yxsh": this.Yxs.dwh,
+          "bz": this.bz,
+          "jg0101id": this.userInfo.useraccount,
+          "classList": this.getBjOptionList
+        }).then(res=> {
+          const data = res.data
+          if (data.code == 200) {
+            ElMessage.success("添加成功")
+            // 刷新课程表
+            this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
+            this.dialogVisible = false
+          }
+
+        })
+          console.log(this.getBjOptionList)
+
+
+      } else {
+        ElMessage.error("完成课程、班级选择")
+      }
+    },
+
   },
 
   computed: {
     getKcList() {
       return this.KcAndBjList.map(item => {return item.kcmc})
     },
+    getBjOptionList() {
+      return this.Bjlist.filter(i => { return this.BjOption.some(t=> { return t == i.bh }) })
+    }
   }
 }
 </script>
