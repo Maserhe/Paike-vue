@@ -5,42 +5,44 @@
       <!-- 搜索框 -->
       <br/>
       <el-scrollbar :always="true">
+
           <div style="display: flex; align-items: center;">
             <p style="margin-right: 1rem;">学期</p>
-            <el-select v-model="XnxqOption" placeholder="Select" @change="changeXnxq" style="margin-right: 1rem">
-              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.qsrq" :value="item.xnxqh"> </el-option>
+            <el-select v-model="XnxqOption" placeholder="选择学期" @change="changeXnxq" style="margin-right: 1rem">
+              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.qsrq" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">学院</p>
-            <el-select v-model="YxsOption" placeholder="Select" @change="changeYxs" style="margin-right: 1rem">
+            <el-select v-model="YxsOption" placeholder="选择学院" @change="changeYxs" style="margin-right: 1rem">
               <el-option v-for="(item, index) in YxsList" :key="index" :label="item.dwmc" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">专业</p>
-            <el-select v-model="ZyOption" placeholder="Select" @change="changeZy" style="margin-right: 1rem">
+            <el-select v-model="ZyOption" placeholder="选择专业" @change="changeZy" style="margin-right: 1rem">
               <el-option v-for="(item, index) in ZyList" :key="index" :label="item.zymc" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">年级</p>
-            <el-select v-model="RxnfOption" placeholder="Select" @change="changeRxnf" style="margin-right: 1rem">
+            <el-select v-model="RxnfOption" placeholder="选择年级" @change="changeRxnf" style="margin-right: 1rem">
               <el-option v-for="(item, index) in RxnfList" :key="index" :label="item + '级'" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">班级</p>
-            <el-select v-model="BjOption" placeholder="Select" @change="changeBj" style="margin-right: 1rem">
+            <el-select v-model="BjOption" placeholder="选择班级" @change="changeBj" style="margin-right: 1rem">
               <el-option v-for="(item, index) in BjList" :key="index" :label="item.bj" :value="item"> </el-option>
             </el-select>
               <el-button type="primary" @click="queryBjLabSchedule">查询</el-button>
           </div>
+
       </el-scrollbar>
       <br/>
 
         <el-table :data="getXkFilter.slice((currentPage - 1)* pagesize, currentPage * pagesize)" style="width: 100%">
             <el-table-column type="index" ></el-table-column>
-            <el-table-column label="课程" prop="sysmc"  ></el-table-column>
-            <el-table-column label="教师" prop="sysmph" ></el-table-column>
-            <el-table-column label="时间" prop="sysmph" ></el-table-column>
-            <el-table-column label="地点" prop="sysmph" ></el-table-column>
+            <el-table-column label="课程" prop="kcmc"  ></el-table-column>
+            <el-table-column label="教师" prop="jgmc" ></el-table-column>
+            <el-table-column label="时间" prop="time" ></el-table-column>
+            <el-table-column label="地点" prop="address" ></el-table-column>
 
             <el-table-column label="操作" width="300rem">
                 <template #header>
@@ -65,16 +67,34 @@
 
 <script>
 import { ElMessage } from "element-plus"
+import { ref } from 'vue'
+
 export default {
 
   name: "SearchClassSchedule",
+  
+  setup() {
+
+    const XnxqOption = ref([])
+    const YxsOption = ref([])
+    const ZyOption = ref([])
+    const RxnfOption = ref([])
+    const BjOption = ref([])
+    return {
+      XnxqOption,
+      YxsOption,
+      ZyOption,
+      RxnfOption,
+      BjOption
+    }
+  },
 
   data() {
     return {
-    
       // 分页
       currentPage: 1,
       pagesize: 10,
+      sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节"],
 
       // 搜索框
       search: "",
@@ -84,31 +104,23 @@ export default {
 
       // 学年学期信息
       XnxqList: [],
-      XnxqOption: "选择学期",
-      Xnxqh: "",
+      Xnxq: {},
 
       // 院系所信息
       YxsList: [],
-      YxsOption: "选择学院",
       // 选择的院系所id
-      YxsId: "", 
-      YxsMc: "",
+      Yxs: {},
 
       // 专业列表信息
       ZyList: [],
-      ZyOption: "选择专业",
-      ZyId: "",
+      Zy: {},
 
       // 年级选择 根据班级的 入学年份
       RxnfList: [],
-      RxnfOption: "选择年级",
-      Rxnf: "",
-
 
       // 班级选择
       BjList: [],
-      BjOption: "选择班级",
-      BjId: "",
+      Bj: {},
 
     }
   },
@@ -182,83 +194,96 @@ export default {
     },
 
     // 选择学年
-    changeXnxq(item) {
-      this.Xnxqh = item
+    changeXnxq() {
+      this.Xnxq =  JSON.parse(JSON.stringify(this.XnxqOption))
+      this.XnxqOption = this.Xnxq.qsrq
       if (!this.YxsList.length) {
         this.getYxsList()
       }
     },
 
     // 选择院系所
-    changeYxs(item) {
-      if (item.dwh) {
-        this.YxsOption = item.dwmc
-        this.YxsId = item.dwh
-        this.YxsMc = item.dwmc
-        
-        // 修改专业列表
-        this.ZyList = []
-        this.ZyOption = "选择专业"
-        this.ZyId = ""
-
-        // 获取专业列表
-        this.getZyListByYxsId(item.dwh)
-      } else {
-        ElMessage.error("请先选择学期")
-      }
+    changeYxs() {
+      this.Yxs = JSON.parse(JSON.stringify(this.YxsOption))
+      this.YxsOption = this.Yxs.dwmc
+      
+      // 清空专业列表
+      this.ZyList = []
+      this.ZyOption = ""
+      this.RxnfOption = ""
+      this.BjOption = ""
+      this.XkList = []
+      this.getZyListByYxsId(this.Yxs.dwh)
     },
 
     // 选择专业列表
-    changeZy(item) {
-      if (item) {
-        this.ZyOption = item.zymc
-        this.ZyId = item.zyh
-
-        // 修改入学年份
-        this.RxnfList = []
-        this.RxnfOption = "选择年级"
-        this.Rxnf = ""
-        // 获取 入学年级
-        this.getRxnfListByZyId(item.zyh)
-       
-      }
+    changeZy() {
+      this.Zy = JSON.parse(JSON.stringify(this.ZyOption))
+      this.ZyOption = this.Zy.zymc
+      // 修改入学年份
+      this.RxnfList = []
+      this.RxnfOption = ""
+      this.BjOption = ""
+      this.XkList = []
+      this.getRxnfListByZyId(this.Zy.zyh)
     },
 
     // 选择入学年份
-    changeRxnf(item) {
-      if (item) {
-        this.Rxnf = item
+    changeRxnf() {
 
-        this.BjList = []
-        this.BjOption = "选择班级"
-        this.BjId = ""
+      this.BjList = []
+      this.BjOption = ""
+      this.XkList = []
 
-        // 根据专业号 获取班级
-        this.getBjListByZyId(this.ZyId, item)
-      }
+      // 根据专业号 获取班级
+      this.getBjListByZyId(this.Zy.zyh, this.RxnfOption)
     },
 
     // 选择班级
-    changeBj(item) {
-      if (item) {
-        this.BjOption = item.bj 
-        this.BjId = item.bh
-      }
+    changeBj() {
+      this.Bj = JSON.parse(JSON.stringify(this.BjOption))
+      this.BjOption = this.Bj.bj
+
     },
+
+    // 根据 学期， 班级号， 获取 实验室课表
+    getXkListByXnxqAndBjId(xnxq, bjId) {
+      this.$axios.post("/weixin-sysxk/xklist", {
+          "Xnxq": xnxq,
+          "BjId": bjId
+      }).then(res => {
+        const data = res.data
+        if (data.code == 200) {
+          this.XkList = data.data
+        }
+      })
+    },
+
 
     // 查询按钮
     queryBjLabSchedule() {
-      if (this.Xnxqh && this.YxsId && this.ZyId && this.BjId) {
-        
+      console.log(this.Xnxq, this.Yxs, this.Zy, this.RxnfOption, this.Bj)
+      if (this.XnxqOption && this.YxsOption && this.ZyOption && this.ZyOption && this.BjOption) {
+        this.getXkListByXnxqAndBjId(this.Xnxq.xnxqh, this.Bj.bh)
       } else {
-        ElMessage.error("请完成选择")
+        ElMessage.error("请完成选择再查询")
       }
     },
+
+
   },
 
   computed: {
       getXkFilter() {
-        return this.XkList.filter( (data) => !this.search || data.sysmc.includes(this.search.toLowerCase()) || data.sysmph.includes(this.search.toLowerCase()))
+        return  this.XkList.map(t => {
+          t['address'] = t.yxsmc + t.sysmph + "教室"
+          t['time'] = "第" + t.kkzc + "周,周" + t.kkDay + " 、"+ this.sections[t.kkSection]
+          return t
+        }).filter( (data) => !this.search 
+        || data.kcmc.includes(this.search.toLowerCase()) 
+        || data.yxsmc.includes(this.search.toLowerCase())
+        || data.sysmph.includes(this.search.toLowerCase())
+        || data.jgmc.includes(this.search.toLowerCase()))
     },
   }
 }
