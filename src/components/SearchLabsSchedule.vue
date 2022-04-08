@@ -34,7 +34,8 @@
 
       <div class="table-wrapper">
         <div class="tabel-container">
-          <table>
+
+            <table >
             <!-- 第一行  节次-->
             <thead><tr><th v-for="(item,index) in sections" :key="index">{{item}}</th></tr></thead>
             <tbody>
@@ -51,9 +52,16 @@
                    <br />
                     班级: {{ courses[index][chindex - 1].bjmcList.join('、')}}
                    <br/>
-                    备注: {{ courses[index][chindex - 1].bz }}
-                  </div>
 
+                   <el-popconfirm v-if="courses[index][chindex - 1].jg0101id == userInfo.useraccount" title="确定要取消排课嘛?" @confirm="canclePaike(index, chindex)">
+                      <template #reference>
+                        <el-button type="success" >取消排课</el-button>
+                      </template>
+                    </el-popconfirm>
+
+                    <!-- 备注: {{ courses[index][chindex - 1].bz }} -->
+                    <!-- <el-button type="success" v-if="courses[index][chindex - 1].jg0101id == userInfo.useraccount" @click="canclePaike(index, chindex)">取消排课</el-button> -->
+                  </div>
                   <div class="paike" v-else-if="userInfo.useraccounttype == 1" @click="paikeButton(index, chindex)">
                     <br />
                     <br />
@@ -65,6 +73,7 @@
               </tr> 
             </tbody>
           </table>
+          
         </div>
       </div>
 
@@ -115,7 +124,7 @@
     </div>
     <br/>
     <div style="text-align: center">
-      <el-button size="large" type="primary" style="width: 6rem" @click="addPaikeButton">确定</el-button>
+      <el-button :loading="commitLoading" size="large" type="primary" style="width: 6rem" @click="addPaikeButton" >确定</el-button>
     </div>
   </el-dialog>
 
@@ -131,12 +140,12 @@ export default {
 
   setup() {
     const dialogVisible = ref(false)
-    const KcOption = ref([])
-    const BjOption = ref([])
-    const XnxqOption = ref([])
-    const YxsOption = ref([])
-    const SysOption = ref([])
-    const ZcOption = ref([])
+    const KcOption = ref("")
+    const BjOption = ref("")
+    const XnxqOption = ref("")
+    const YxsOption = ref("")
+    const SysOption = ref("")
+    const ZcOption = ref("")
 
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
@@ -180,14 +189,6 @@ export default {
         sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节"],
         weeks: ["周一", "周二", "周三", "周四", "周五","周六","周日"],
 
-        // 返回 七个 对象
-        // courses: [
-        //   [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },
-        //   {}, {},  { "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
-        //   [],[],[],[],[],
-        //   [{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },{ "id": 19, "classId": 2, "lessonsTime": "8:00-9:40", "lessonsName": "编译原理","lessonsAddress": "二教302", "lessonsTeacher": "吴老师", "lessonsRemark": "1-5,8-12周", "lessonsNumber": "一","weekday": "星期四" },],
-        // ],
-
         courses: [
           [],[],[],[],[],[],[]
         ],
@@ -197,6 +198,13 @@ export default {
 
         // 课程和 班级 列表
         KcAndBjList: [],
+
+        // loading 优化
+        Zcloading: false,
+
+        // paike 加载
+        commitLoading: false,
+
       }
   },
 
@@ -232,6 +240,10 @@ export default {
       this.Xnxq = JSON.parse(JSON.stringify(this.XnxqOption))
       this.XnxqOption = this.Xnxq.qsrq
       this.initcourse()
+      
+      this.ZcOption = ""
+      // 获取 这个教师 当前学年 的课程
+      this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
       if (!this.YxsList.length) {
         this.getYxsList()
       }
@@ -253,6 +265,7 @@ export default {
       this.Yxs = JSON.parse(JSON.stringify(this.YxsOption))
       this.YxsOption = this.Yxs.dwmc
       this.SysOption = ""
+      this.ZcOption = ""
       this.getSysListById(this.Yxs.dwh)
     },
 
@@ -270,9 +283,19 @@ export default {
 
     // 选择周次
     changeZc() {
-      console.log(this.ZcOption)
       // 查询 这一周的 课程
-      this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
+      if (this.XnxqOption && this.YxsOption && this.SysOption) {
+        let l = this.$loading( { lock: true,
+          text: '加载中……',
+          background: 'rgba(0, 0, 0, 0.6)'
+        })
+        this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
+        l.close()
+      } else {
+        ElMessage.error("请完成前面的选项")
+        this.ZcOption = ""
+      }
+      
     },
 
     // 选择课程
@@ -328,7 +351,9 @@ export default {
 
     // 查看该课程的相关详情
     toScanDetail(item, idx) {
-      var con = `<div style="width:200px;text-align:left!important;margin:0 auto;color:#999;font-size:14px">学院：${this.Yxs.dwmc}<br/>地点：${item.sysmph}<br/>课程：${item.kcmc}<br/>老师：${item.jgmc}<br/>班级：${item.bjmcList.join('、')}</div>`;
+      console.log(item)
+
+      var con = `<div style="width:200px;text-align:left!important;margin:0 auto;color:#999;font-size:14px">学院：${this.Yxs.dwmc}<br/>地点：${item.sysmph}<br/>课程：${item.kcmc}<br/>教师：${item.jgmc}<br/>班级：${item.bjmcList.join('、')}<br/>备注：${item.bz}<br/></div>`;
       if (this.Yxs.dwmc) {
         ElMessage({
           type: 'success',
@@ -338,9 +363,30 @@ export default {
       }
     },
 
+    // 取消排课
+    canclePaike(x, y) {
+      console.log(x, y)
+      // 取消课程
+      this.$axios.post("/weixin-sysxk/cancleXk", {
+        "xnxq01ID": this.Xnxq.xnxqh,
+        "kkzc": this.ZcOption,
+        "kksjmx": (x+1) + "-" + y,
+        "jg0101ID": this.userInfo.useraccount,
+      }).then(res=> {
+        const data = res.data
+        if (data.code == 200) {
+          // 刷新 课程表 删除缓存
+          this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
+        } else {
+          ElMessage.error("删除失败，系统错误！")
+        }
+      })
+
+
+    },
+
     // 点击排课
     paikeButton(index, chindex) {
-      // 检测必要参数 是否都存在， 否则打不开对话框
       if(this.XnxqOption && this.YxsOption && this.SysOption && this.ZcOption && this.KcAndBjList) {
         this.thatDay = index + 1
         this.thatSection = chindex
@@ -357,8 +403,11 @@ export default {
 
     // 提交排课按钮
     addPaikeButton() {
+
+      // 检测必要参数 是否都存在， 否则打不开对话框
       // 检验参数
       if (this.KcOption && this.BjOption && this.BjOption.length != 0) {
+        this.commitLoading = true
         this.$axios.post("/weixin-sysxk/addSysxk", {
           "xnxq01id": this.Xnxq.xnxqh,
           "kkzc": this.ZcOption,
@@ -379,11 +428,10 @@ export default {
             this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
             this.dialogVisible = false
           }
-
+          this.commitLoading = false
         })
-          console.log(this.getBjOptionList)
-
-
+        // console.log(this.getBjOptionList)
+        this.commitLoading = false
       } else {
         ElMessage.error("完成课程、班级选择")
       }
