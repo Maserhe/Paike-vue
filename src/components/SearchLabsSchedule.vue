@@ -124,7 +124,7 @@
     </div>
     <br/>
     <div style="text-align: center">
-      <el-button :loading="commitLoading" size="large" type="primary" style="width: 6rem" @click="addPaikeButton" >确定</el-button>
+      <el-button size="large" type="primary" style="width: 6rem" @click.native.prevent="addPaikeButton" :disabled="loading" >确定</el-button>
     </div>
   </el-dialog>
 
@@ -146,6 +146,7 @@ export default {
     const YxsOption = ref("")
     const SysOption = ref("")
     const ZcOption = ref("")
+    const loading = ref(false)
 
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
@@ -157,6 +158,8 @@ export default {
       ZcOption,
       KcOption,
       BjOption,
+
+      loading,
     }
   },
 
@@ -199,12 +202,6 @@ export default {
         // 课程和 班级 列表
         KcAndBjList: [],
 
-        // loading 优化
-        Zcloading: false,
-
-        // paike 加载
-        commitLoading: false,
-
       }
   },
 
@@ -243,7 +240,10 @@ export default {
       
       this.ZcOption = ""
       // 获取 这个教师 当前学年 的课程
+      Loading.show()
       this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
+      Loading.hide()
+
       if (!this.YxsList.length) {
         this.getYxsList()
       }
@@ -266,7 +266,9 @@ export default {
       this.YxsOption = this.Yxs.dwmc
       this.SysOption = ""
       this.ZcOption = ""
+      Loading.show()
       this.getSysListById(this.Yxs.dwh)
+      Loading.hide()
     },
 
     // 选择实验室
@@ -277,7 +279,9 @@ export default {
       this.ZcOption = ""
       // 查询老师的 课程
       if (!this.KcAndBjList.length) {
+        Loading.show()
         this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
+        Loading.hide()
       }
     },
 
@@ -285,12 +289,10 @@ export default {
     changeZc() {
       // 查询 这一周的 课程
       if (this.XnxqOption && this.YxsOption && this.SysOption) {
-        let l = this.$loading( { lock: true,
-          text: '加载中……',
-          background: 'rgba(0, 0, 0, 0.6)'
-        })
+        Loading.show()
         this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
-        l.close()
+        Loading.hide()
+
       } else {
         ElMessage.error("请完成前面的选项")
         this.ZcOption = ""
@@ -407,7 +409,8 @@ export default {
       // 检测必要参数 是否都存在， 否则打不开对话框
       // 检验参数
       if (this.KcOption && this.BjOption && this.BjOption.length != 0) {
-        this.commitLoading = true
+        this.loading = true
+        Loading.show()
         this.$axios.post("/weixin-sysxk/addSysxk", {
           "xnxq01id": this.Xnxq.xnxqh,
           "kkzc": this.ZcOption,
@@ -427,11 +430,15 @@ export default {
             // 刷新课程表
             this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
             this.dialogVisible = false
+            this.loading = false
+            Loading.hide()
           }
-          this.commitLoading = false
+        }).catch(error=>{
+          this.loading = false
+          Loading.hide()
         })
+
         // console.log(this.getBjOptionList)
-        this.commitLoading = false
       } else {
         ElMessage.error("完成课程、班级选择")
       }
