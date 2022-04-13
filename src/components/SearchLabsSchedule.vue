@@ -80,7 +80,7 @@
     <!-- 弹窗 -->
     <el-dialog v-model="dialogVisible" title="排课管理" width="80%" :before-close="handleClose">
       <!-- 实验室表单, 修改实验室信息 -->
-      学期: {{ Xnxq }}
+      <!-- 学期: {{ Xnxq }}
       <br/>
       学院: {{ Yxs }} 
       <br/>
@@ -90,13 +90,13 @@
       <br/>
      天: {{ thatDay }}
       <br/>
-      节: {{ thatSection  }}
+      节: {{ thatSection  }} -->
     <el-divider />
-    查询老师的课程
+    <!-- 查询老师的课程
     班级的 年级
     查询教师上课的班级
 
-    学年学期 + 教师 id
+    学年学期 + 教师 id -->
     <el-divider />
     <br/>
     <div style="display: flex; align-items: center;">
@@ -124,6 +124,7 @@
     </div>
     <br/>
     <div style="text-align: center">
+      <el-image :src="logo" ></el-image>
       <el-button size="large" type="primary" style="width: 6rem" @click.native.prevent="addPaikeButton" :disabled="loading" >确定</el-button>
     </div>
   </el-dialog>
@@ -132,7 +133,6 @@
 </template>
 
 <script>
-import { ElMessage } from 'element-plus'
 import { fromCode } from '@/utils/validate'
 import { ref } from 'vue'
 
@@ -353,8 +353,6 @@ export default {
 
     // 查看该课程的相关详情
     toScanDetail(item, idx) {
-      console.log(item)
-
       var con = `<div style="width:200px;text-align:left!important;margin:0 auto;color:#999;font-size:14px">学院：${this.Yxs.dwmc}<br/>地点：${item.sysmph}<br/>课程：${item.kcmc}<br/>教师：${item.jgmc}<br/>班级：${item.bjmcList.join('、')}<br/>备注：${item.bz}<br/></div>`;
       if (this.Yxs.dwmc) {
         ElMessage({
@@ -367,13 +365,13 @@ export default {
 
     // 取消排课
     canclePaike(x, y) {
-      console.log(x, y)
       // 取消课程
       this.$axios.post("/weixin-sysxk/cancleXk", {
         "xnxq01ID": this.Xnxq.xnxqh,
         "kkzc": this.ZcOption,
         "kksjmx": (x+1) + "-" + y,
         "jg0101ID": this.userInfo.useraccount,
+        "sysh": this.Sys.sysh
       }).then(res=> {
         const data = res.data
         if (data.code == 200) {

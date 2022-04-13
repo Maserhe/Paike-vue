@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import { ElMessage } from "element-plus"
 import { ref } from 'vue'
 
 export default {
