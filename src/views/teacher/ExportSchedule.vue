@@ -43,8 +43,16 @@
 
     <el-dialog v-model="dialogVisible" title="排课管理" width="95%" :before-close="handleClose">
       <div style="text-align: center">
-        <el-button size="large" type="primary" style="width: 6rem" @click.native.prevent="ExportPdf">下载课表</el-button>
+        <el-tooltip
+          effect="customized"
+          content="推荐使用谷歌浏览器,移动端部分浏览器可能不支持下载"
+          placement="top"
+        >
+          <el-button size="large" type="primary" style="width: 6rem" @click.native.prevent="ExportPdf">下载课表</el-button>
+        </el-tooltip>
+         
       </div>
+
       <el-divider />
       <!-- 打印pdf的内容 #197EDC -->
       <div id="pdfDom">
@@ -193,6 +201,9 @@ export default {
         this.xnxqh = xnxq
         if (data.code == 200) {
           this.XkList = data.data
+          if (!this.XkList.length) {
+            ElMessage.success("查询无数据")
+          }
         }
       })
     },
@@ -205,9 +216,11 @@ export default {
 
     QuerySchedule() {
       // 判断 是否 选择了学期
-      if (this.XnxqOption) {
+      if (this.XnxqOption) { 
         if (this.xnxqh != this.Xnxq.xnxqh) {
+          Loading.show()
           this.getXkListByXnxqAndJgId(this.Xnxq.xnxqh, this.userInfo.useraccount)
+          Loading.hide()
         }
       } else {
         ElMessage.error("请选择查询的学期")
@@ -232,6 +245,10 @@ export default {
 
     ExportPdf() {
       this.$pdf.getPdf('pdfDom', "实验室课程表" + this.getdate().replace(/\s/g,""))
+    },
+    
+    ExportPdf2() {
+      this.$pdf.getPdf('pdfDom2', "123")
     },
 
     getdate() {
@@ -271,6 +288,16 @@ export default {
 </script>
 
 <style>
+.el-popper.is-customized {
+  /* Set padding to ensure the height is 32px */
+  padding: 6px 12px;
+  background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
+}
+
+.el-popper.is-customized .el-popper__arrow::before {
+  background: linear-gradient(45deg, #b2e68d, #bce689);
+  right: 0;
+}
 .el-button {
     /* display: inline-flex; */
   width: 6rem !important;

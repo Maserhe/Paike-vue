@@ -124,7 +124,6 @@
     </div>
     <br/>
     <div style="text-align: center">
-      <el-image :src="logo" ></el-image>
       <el-button size="large" type="primary" style="width: 6rem" @click.native.prevent="addPaikeButton" :disabled="loading" >确定</el-button>
     </div>
   </el-dialog>

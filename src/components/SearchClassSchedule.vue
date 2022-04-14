@@ -197,7 +197,9 @@ export default {
       this.Xnxq =  JSON.parse(JSON.stringify(this.XnxqOption))
       this.XnxqOption = this.Xnxq.qsrq
       if (!this.YxsList.length) {
+        Loading.show()
         this.getYxsList()
+        Loading.hide()
       }
     },
 
@@ -224,7 +226,9 @@ export default {
       this.RxnfOption = ""
       this.BjOption = ""
       this.XkList = []
+      Loading.show()
       this.getRxnfListByZyId(this.Zy.zyh)
+      Loading.hide()
     },
 
     // 选择入学年份
@@ -235,7 +239,9 @@ export default {
       this.XkList = []
 
       // 根据专业号 获取班级
+      Loading.show()
       this.getBjListByZyId(this.Zy.zyh, this.RxnfOption)
+      Loading.hide()
     },
 
     // 选择班级
@@ -263,7 +269,9 @@ export default {
     queryBjLabSchedule() {
       console.log(this.Xnxq, this.Yxs, this.Zy, this.RxnfOption, this.Bj)
       if (this.XnxqOption && this.YxsOption && this.ZyOption && this.ZyOption && this.BjOption) {
+        Loading.show()
         this.getXkListByXnxqAndBjId(this.Xnxq.xnxqh, this.Bj.bh)
+        Loading.hide()
       } else {
         ElMessage.error("请完成选择再查询")
       }
