@@ -48,16 +48,17 @@
           content="推荐使用谷歌浏览器,移动端部分浏览器可能不支持下载"
           placement="top"
         >
-          <el-button size="large" type="primary" style="width: 6rem" @click.native.prevent="ExportPdf">下载课表</el-button>
+          <el-button type="primary" style="width: 6rem" @click.native.prevent="ExportPdf">下载课表</el-button>
         </el-tooltip>
-         
       </div>
 
-      <el-divider />
+      <br>
+      <el-divider><el-icon><i-star/></el-icon></el-divider>
       <!-- 打印pdf的内容 #197EDC -->
       <div id="pdfDom">
-        <div style="margin: 4px; border:2px solid #197EDC">
-          
+        <br>
+        <div style="margin: 8px; border:2px solid #197EDC">
+          <br>
           <el-container>
             <el-header>
               <div style="text-align: center; height: 2rem; width:100%" > 
@@ -247,9 +248,6 @@ export default {
       this.$pdf.getPdf('pdfDom', "实验室课程表" + this.getdate().replace(/\s/g,""))
     },
     
-    ExportPdf2() {
-      this.$pdf.getPdf('pdfDom2', "123")
-    },
 
     getdate() {
       var date = new Date();

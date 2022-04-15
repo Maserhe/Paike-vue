@@ -31,7 +31,7 @@
             <el-select v-model="BjOption" placeholder="选择班级" @change="changeBj" style="margin-right: 1rem">
               <el-option v-for="(item, index) in BjList" :key="index" :label="item.bj" :value="item"> </el-option>
             </el-select>
-              <el-button type="primary" @click="queryBjLabSchedule">查询</el-button>
+              <el-button type="primary" @click="exportBjLabSchedule">导出课表</el-button>
           </div>
 
       </el-scrollbar>
@@ -62,17 +62,99 @@
             </template>
         </el-table>
 
+
+    <el-dialog v-model="dialogVisible" title="排课管理" width="95%" :before-close="handleClose">
+      <div style="text-align: center">
+        <el-tooltip
+          effect="customized"
+          content="推荐使用谷歌浏览器,移动端部分浏览器可能不支持下载"
+          placement="top"
+        >
+          <el-button type="primary" style="width: 6rem" @click.native.prevent="ExportPdf">下载课表</el-button>
+        </el-tooltip>
+      </div>
+      <br>
+       <el-divider><el-icon><i-star/></el-icon></el-divider>
+      <!-- 打印pdf的内容 #197EDC -->
+      <div id="exportPdfDom">
+        <br>
+        <div style="margin: 8px; border:2px solid #197EDC">
+          <br>
+          <el-container>
+            <el-header>
+              <div style="text-align: center; height: 2rem; width:100%" > 
+                  <img style="height: 100%;" :src="logo" />
+                  <h3 style="color: #197EDC">沈阳工业大学实验室课表</h3>
+              </div>
+            </el-header>
+            <el-main>
+              <el-divider></el-divider>
+                <el-descriptions border :column="3" class="margin-top">
+                <el-descriptions-item>
+                  <template #label>
+                    <div class="cell-item">
+                      <el-icon>
+                        <i-tickets />
+                      </el-icon>
+                      学期
+                    </div>
+                  </template> {{ this.XnxqOption }}
+                </el-descriptions-item>
+
+                <el-descriptions-item>
+                  <template #label>
+                  <div class="cell-item">
+                    <el-icon> <i-home-filled /></el-icon>班级名
+                  </div>
+                  </template> {{ this.BjOption }}
+                </el-descriptions-item>
+                
+                <el-descriptions-item>
+                  <template #label>
+                  <div class="cell-item">
+                    <el-icon> <i-clock /></el-icon>导出日期
+                  </div>
+                  </template> {{ this.getdate() }}
+                </el-descriptions-item>
+              </el-descriptions>
+
+              <el-table :data="getXkFilter" border style="width: 100%">
+                <el-table-column type="index" ></el-table-column>
+                <el-table-column label="课程名称" prop="kcmc"  ></el-table-column>
+                <el-table-column label="教师" prop="jgmc" ></el-table-column>
+                <el-table-column label="排课时间" prop="time" ></el-table-column>
+                <el-table-column label="地点" prop="address" ></el-table-column>
+                <el-table-column label="备注" prop="bz"></el-table-column>
+              </el-table>
+
+            </el-main>
+            <el-footer>
+              <div style="margin-top: 20px; text-align: right">
+                <el-divider><el-icon><i-star/></el-icon></el-divider>
+                <div style="margin-top: 20px; color: #197EDC">沈工大排实验室课管理</div>
+              </div>
+
+            </el-footer>
+          </el-container>
+        </div> 
+      </div>
+    </el-dialog>    
+
   </el-card>
 </template>
 
 <script>
+import jjdx from "@/assets/jjdx.png"
 import { ref } from 'vue'
-
+import { fromCode } from '@/utils/validate'
 export default {
 
   name: "SearchClassSchedule",
   
   setup() {
+    const logo = jjdx
+    const dialogVisible = ref(false)
+    const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
 
     const XnxqOption = ref([])
     const YxsOption = ref([])
@@ -84,12 +166,18 @@ export default {
       YxsOption,
       ZyOption,
       RxnfOption,
-      BjOption
+      BjOption,
+
+      dialogVisible,
+      handleClose,
+      logo,
     }
   },
 
   data() {
     return {
+
+      userInfo: null,
       // 分页
       currentPage: 1,
       pagesize: 10,
@@ -126,6 +214,12 @@ export default {
 
 
   created() {
+    const user = sessionStorage.getItem("userInfo")
+    if(user) {
+      this.userInfo = JSON.parse(fromCode(user))      // 根据请求获取用户信息
+    } else {
+      this.$router.push("/login")
+    }
     this.getXnxqList()
   },
 
@@ -214,7 +308,9 @@ export default {
       this.RxnfOption = ""
       this.BjOption = ""
       this.XkList = []
+      Loading.show()
       this.getZyListByYxsId(this.Yxs.dwh)
+      Loading.hide()
     },
 
     // 选择专业列表
@@ -249,6 +345,14 @@ export default {
       this.Bj = JSON.parse(JSON.stringify(this.BjOption))
       this.BjOption = this.Bj.bj
 
+      if (this.XnxqOption && this.YxsOption && this.ZyOption && this.ZyOption && this.BjOption) {
+        Loading.show()
+        this.getXkListByXnxqAndBjId(this.Xnxq.xnxqh, this.Bj.bh)
+        Loading.hide()
+      } else {
+        ElMessage.error("请完成选择再查询")
+      }
+
     },
 
     // 根据 学期， 班级号， 获取 实验室课表
@@ -264,17 +368,41 @@ export default {
       })
     },
 
-
     // 查询按钮
-    queryBjLabSchedule() {
-      console.log(this.Xnxq, this.Yxs, this.Zy, this.RxnfOption, this.Bj)
+    exportBjLabSchedule() {
+      // 先完成选择
       if (this.XnxqOption && this.YxsOption && this.ZyOption && this.ZyOption && this.BjOption) {
-        Loading.show()
-        this.getXkListByXnxqAndBjId(this.Xnxq.xnxqh, this.Bj.bh)
-        Loading.hide()
+        // 判断有无数据
+        if (this.XkList.length) {
+          this.dialogVisible = true
+        } else {
+          ElMessage.error("无数据可以导出")
+        }
       } else {
-        ElMessage.error("请完成选择再查询")
+        ElMessage.error("请完成前面选择")
       }
+    },
+
+    ExportPdf() {
+      this.$pdf.getPdf('exportPdfDom', this.BjOption + "实验室课程表" + this.getdate().replace(/\s/g,""))
+    },
+    
+
+    getdate() {
+      var date = new Date();
+      var seperator1 = "-";
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var strDate = date.getDate();
+
+      if (month >= 1 && month <= 9) {
+          month = "0" + month;
+      }
+      if (strDate >= 0 && strDate <= 9) {
+          strDate = "0" + strDate;
+      }
+      var currentdate = year + " 年 " + month + " 月 " + strDate + " 日 ";
+      return currentdate;
     },
 
 
@@ -298,6 +426,16 @@ export default {
 
 <style>
 
+.el-popper.is-customized {
+  /* Set padding to ensure the height is 32px */
+  padding: 6px 12px;
+  background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
+}
+
+.el-popper.is-customized .el-popper__arrow::before {
+  background: linear-gradient(45deg, #b2e68d, #bce689);
+  right: 0;
+}
 
 .el-button {
     /* display: inline-flex; */
@@ -305,12 +443,11 @@ export default {
 }
 
 .el-select .el-input__inner {
-    width: 8rem;
+    width: 6rem;
 }
 </style>
 <style scoped>
 
-/* a5d16d  */
 * {
   margin: 0;
   padding: 0;
