@@ -92,7 +92,7 @@
                   <div class="cell-item">
                     <el-icon> <i-clock /></el-icon>导出日期
                   </div>
-                  </template> {{ this.getdate() }}
+                  </template> {{ getdate() }}
                 </el-descriptions-item>
               </el-descriptions>
 
@@ -122,7 +122,7 @@
 
 <script>
 import { ref } from 'vue'
-import { fromCode } from '@/utils/validate'
+import { fromCode , getdate } from '@/utils/validate'
 import jjdx from "@/assets/jjdx.png"
 export default {
   setup() {
@@ -133,6 +133,7 @@ export default {
       XnxqOption,
       dialogVisible,
       handleClose,
+      getdate,
     }
   },
   data() {
@@ -245,26 +246,9 @@ export default {
     },
 
     ExportPdf() {
-      this.$pdf.getPdf('pdfDom', "实验室课程表" + this.getdate().replace(/\s/g,""))
+      this.$pdf.getPdf('pdfDom', "实验室课程表" + getdate().replace(/\s/g,""))
     },
     
-
-    getdate() {
-      var date = new Date();
-      var seperator1 = "-";
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var strDate = date.getDate();
-
-      if (month >= 1 && month <= 9) {
-          month = "0" + month;
-      }
-      if (strDate >= 0 && strDate <= 9) {
-          strDate = "0" + strDate;
-      }
-      var currentdate = year + " 年 " + month + " 月 " + strDate + " 日 ";
-      return currentdate;
-    },
 
   },
 

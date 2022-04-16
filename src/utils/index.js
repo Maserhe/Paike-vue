@@ -33,15 +33,10 @@ export const pathMap = {
     student_manage: '学生管理',
     teacher_manage: '教师管理',
     laboratory_manage: '实验室管理',
-
+    class_schedule: '班级课表管理',
     export_schedule: '导出课表',
-    laboratory: "实验室管理",
     laboratory_schedule: '实验室课表',
-    query_schedule: '课表查询',
 
-    schedule: '实验室课表',
-    export: '导出课表',
-    query: '课表查询',
 
   }
   

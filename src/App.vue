@@ -1,7 +1,7 @@
 
 <template>
   <div class="layout">
-    <el-container v-if="state.showMenu" class=" ">
+    <el-container v-if="state.showMenu" class="container">
       <el-aside  class="aside" width="collapse"> 
         <div @click="closeAllMenu()"><el-icon :size="25" class="icon-operation"> <i-operation /></el-icon></div>
         <div class="line" />
@@ -16,24 +16,16 @@
           :router="true"
           :default-active='state.currentPath'
         >
+
+          <!-- 公共页面 -->
+          <el-menu-item index="/class_schedule"><el-icon><i-platform /></el-icon><template #title>班级课表</template></el-menu-item>
+          <el-menu-item index="/laboratory_schedule"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
+
           <!-- 系统设置 -->
           <el-menu-item index="/laboratory_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-school /></el-icon><template #title>实验室管理</template></el-menu-item>
-          <el-menu-item index="/student_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-platform /></el-icon><template #title>学生管理</template></el-menu-item>
-          <el-menu-item index="/teacher_manage" v-if="userInfo.useraccounttype == 0" ><el-icon><i-user /></el-icon><template #title>教师管理</template></el-menu-item>
-
-
 
           <!-- 教师页面 -->
-          <el-menu-item index="/laboratory" v-if="userInfo.useraccounttype == 1" ><el-icon><i-platform /></el-icon><template #title>实验室管理</template></el-menu-item>
-          <el-menu-item index="/laboratory_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
-          <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-platform /></el-icon><template #title>导出课表</template></el-menu-item>
-          <!-- <el-menu-item index="/query_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-user /></el-icon><template #title>课表查询</template></el-menu-item> -->
-
-
-          <!-- 学生界面 -->
-          <el-menu-item index="/query" v-if="userInfo.useraccounttype == 2" ><el-icon><i-user /></el-icon><template #title>课表查询</template></el-menu-item>
-          <el-menu-item index="/schedule" v-if="userInfo.useraccounttype == 2"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
-          <el-menu-item index="/export" v-if="userInfo.useraccounttype == 2"><el-icon><i-platform /></el-icon><template #title>导出课表</template></el-menu-item>
+          <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-platform /></el-icon><template #title>排课管理</template></el-menu-item>
 
         </el-menu>
       </el-aside>
@@ -175,7 +167,7 @@ export default {
   .main {
     height: calc(100vh - 100px);
     overflow: auto;
-    padding: 1rem;
+    padding: 10px;
   }
   .icon-operation {
     height: 2em;
@@ -215,11 +207,11 @@ export default {
   .el-popper__arrow {
     display: none;
   }
-  .el-menu--collapse {
+  /* .el-menu--collapse {
       width: 2rem;
   }
   .el-menu-item .el-menu-tooltip__trigger {
       padding: 0 12px;
-  }
+  } */
 
 </style>
