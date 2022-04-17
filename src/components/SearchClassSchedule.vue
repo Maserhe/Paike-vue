@@ -63,7 +63,7 @@
         </el-table>
 
 
-    <el-dialog v-model="dialogVisible" title="排课管理" width="95%" :before-close="handleClose">
+    <el-dialog v-model="dialogVisible" title="排课管理"  width="60%" :before-close="handleClose">
       <div style="text-align: center">
         <el-tooltip
           effect="customized"

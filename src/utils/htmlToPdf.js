@@ -12,7 +12,8 @@ function getPdf (idStr, title) {
 
         var dataUrl = canvas.toDataURL("image/png");
         var downloadUrl = dataUrl.replace("image/png","image/octet-stream");//图片地址
-            /* 导出不分页处理 */
+        
+        /* 导出不分页处理 */
         const pageData = canvas.toDataURL('image/jpeg', 1.0)
         const pdfWidth = (contentWidth + 10) / 2 * 0.75
         const pdfHeight = (contentHeight + 200) / 2 * 0.75 // 500为底部留白

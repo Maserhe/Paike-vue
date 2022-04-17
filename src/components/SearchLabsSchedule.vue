@@ -79,6 +79,12 @@
 
     <!-- 弹窗 -->
     <el-dialog v-model="dialogVisible" title="排课管理" width="80%" :before-close="handleClose">
+      <el-descriptions :column="1" border >
+        <el-descriptions-item><template #label><el-icon> <i-tickets /></el-icon>学期学年</template>{{ XnxqOption }}</el-descriptions-item>
+        <el-descriptions-item><template #label><el-icon> <i-location-information /></el-icon>上课地址</template>{{ Yxs.dwmc }} {{ Sys.sysmph }} 教室</el-descriptions-item>
+        <el-descriptions-item><template #label><el-icon> <i-timer /></el-icon>上课时间</template> 第 {{ ZcOption }} 周、 周 {{ thatDay }}、{{ sections[thatSection] }}</el-descriptions-item>
+      </el-descriptions>
+
       <!-- 实验室表单, 修改实验室信息 -->
       <!-- 学期: {{ Xnxq }}
       <br/>

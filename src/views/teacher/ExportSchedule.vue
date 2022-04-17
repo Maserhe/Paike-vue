@@ -27,6 +27,16 @@
               <template #header>
                   <el-input v-model="search" placeholder="输入课程、教师、地点搜索" />
               </template>
+
+               <template #default="scope" >
+                    <el-button type="primary" @click="changePaikeInfo(scope.row)">修改</el-button>
+                    <el-popconfirm title="确定要删除该课程?" @confirm="deletePaikeById(scope.row)">
+                      <template #reference>
+                        <el-button type="danger" >删除</el-button>
+                      </template>
+                    </el-popconfirm>
+                </template>
+
           </el-table-column>
           <template #append>
               <el-pagination
@@ -41,7 +51,48 @@
           </template>
       </el-table>
 
-    <el-dialog v-model="dialogVisible" title="排课管理" width="95%" :before-close="handleClose">
+
+    <el-dialog v-model="manageVisible" title="排课管理" width="80%" :before-close="handleClose">
+
+      <el-descriptions :column="1" border >
+        <el-descriptions-item><template #label><el-icon> <i-tickets /></el-icon>学期学年</template>{{ XnxqOption }}</el-descriptions-item>
+        <el-descriptions-item><template #label><el-icon> <i-location-information /></el-icon>上课地址</template>{{ managePaike.address }}</el-descriptions-item>
+        <el-descriptions-item><template #label><el-icon> <i-timer /></el-icon>上课时间</template>{{ managePaike.time }}</el-descriptions-item>
+      </el-descriptions>
+
+      <br/>
+      <div style="display: flex; align-items: center;">
+        <p style="margin-right: 1rem;">选择课程</p>
+        <el-select v-model="KcOption" placeholder="选择课程" @change="changeKc" style="margin-right: 1rem">
+          <el-option v-for="(item, index) in getKcList" :key="index" :label="item" :value="item"> </el-option>
+        </el-select>
+      </div>
+
+      <br/>
+      <div style="display: flex; align-items: center;">
+        <p style="margin-right: 1rem;">选择班级</p>
+        <el-select  v-model="BjOption" multiple placeholder="选择班级" @change="changeBj" style="margin-right: 1rem">
+          <el-option v-for="(item, index) in Bjlist" :key="item.bh" :label="item.bjmc" :value="item.bh"> </el-option>
+        </el-select>
+      </div>
+
+      <br/>
+      <div style="display: flex; align-items: center;">
+        <p style="margin-right: 1rem;">备注说明</p>
+        <el-input  style="margin-right: 1rem"
+          v-model="managePaike.bz"
+          :autosize="{ minRows: 2, maxRows: 4 }"
+          type="textarea"
+          placeholder="非必需输入"
+        />
+      </div>
+      <br/>
+      <div style="text-align: center">
+        <el-button size="large" type="primary" style="width: 6rem" @click.native.prevent="changePaikeButton" :disabled="loading" >确定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog v-model="dialogVisible" title="排课管理" width="60%" :before-close="handleClose">
       <div style="text-align: center">
         <el-tooltip
           effect="customized"
@@ -127,13 +178,22 @@ import jjdx from "@/assets/jjdx.png"
 export default {
   setup() {
     const XnxqOption = ref("")
+    const KcOption = ref("")
+    const BjOption = ref("")
+
     const dialogVisible = ref(false)
+    const manageVisible = ref(false)
+    const loading = ref(false)
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
       XnxqOption,
       dialogVisible,
+      manageVisible,
       handleClose,
       getdate,
+      KcOption,
+      BjOption,
+      loading,
     }
   },
   data() {
@@ -155,6 +215,13 @@ export default {
       xnxqh: "", //
       logo: jjdx,
 
+      // 课程和 班级 列表
+      KcAndBjList: [],
+      
+      // 班级列表
+      Bjlist: [], 
+
+      managePaike: {},
 
     }
 
@@ -214,7 +281,40 @@ export default {
     changeXnxq() {
       this.Xnxq =  JSON.parse(JSON.stringify(this.XnxqOption))
       this.XnxqOption = this.Xnxq.qsrq
+
+      Loading.show()
+      this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
+      Loading.hide()
     },
+
+    // 根据学期号 和 教师号 获取课程 以及班级
+    getKcAndBjList(Xnxqh, Jgh) {
+      this.$axios.post("/weixin-jskb/getjskb", {
+        "Xnxqh": Xnxqh,
+        "Jgh": Jgh
+      }).then(res => {
+        const data = res.data
+        if (data.code == 200) {
+          this.KcAndBjList = data.data
+        }
+      })
+    },
+    
+    // 选择课程
+    changeKc() {
+      const arr = this.KcAndBjList.filter(i => {return i.kcmc == this.KcOption})
+      if (arr.length == 1) {
+        this.Bjlist = arr[0].classList
+      }
+    },
+
+    // 选择班级
+    changeBj(item) {
+      console.log(this.BjOption)
+      console.log(item)
+    },
+
+
 
     QuerySchedule() {
       // 判断 是否 选择了学期
@@ -237,17 +337,91 @@ export default {
         } else {
           ElMessage.error("无数据导出，点击查询试试")
         }
-
       } else {
         ElMessage.error("请先选择学期，点击查询")
       }
-
-
     },
 
     ExportPdf() {
       this.$pdf.getPdf('pdfDom', "实验室课程表" + getdate().replace(/\s/g,""))
     },
+
+    changePaikeInfo(item) {
+      // 查询自己 当前学期的 课程
+      this.managePaike = JSON.parse(JSON.stringify(item))
+      this.manageVisible = true
+      console.log(this.managePaike)
+    },
+
+    deletePaikeById(item) {
+      // 校验参数
+      if (this.XnxqOption) {
+        this.$axios.post("/weixin-sysxk/cancleXk", {
+          "xnxq01ID": this.Xnxq.xnxqh,
+          "kkzc": item.kkzc,
+          "kksjmx": item.kkDay + "-" + item.kkSection,
+          "jg0101ID": this.userInfo.useraccount,
+          "sysh": item.sysh
+        }).then(res => {
+          const data = res.data
+          if (data.code == 200) {
+            ElMessage.success("删除成功!")
+            Loading.show()
+            this.getXkListByXnxqAndJgId(this.Xnxq.xnxqh, this.userInfo.useraccount)
+            Loading.hide()
+          } else {
+            ElMessage.error("系统错误!")
+          }
+        })
+      } else {
+        ElMessage.error("系统错误!")
+      }
+    },
+
+    //  学期， 实验室， 周次， 时间明细， 
+
+    // 新的 课程， 新的，班级 列表
+
+    // 管理
+    changePaikeButton() {
+      console.log("改变")
+      // 校验参数
+      if (this.KcOption && this.BjOption && this.BjOption.length != 0) {
+        this.loading = true
+        Loading.show()
+        this.$axios.post("/weixin-sysxk/changeXk", {
+          "xnxq01id": this.Xnxq.xnxqh,
+          "sysh": this.managePaike.sysh,
+          "kkzc": this.managePaike.kkzc,
+          "kksjmx": this.managePaike.kkDay + "-" + this.managePaike.kkSection,
+          "jg0101id": this.userInfo.useraccount,
+          "jgmc": this.userInfo.userrealname,
+
+          // 新的
+          "kcmc": this.KcOption,
+          "bz": this.managePaike.bz,
+          "classList": this.getBjOptionList  // 班号 列表
+        }).then(res=> {
+          const data = res.data
+          if (data.code == 200) {
+            ElMessage.success("修改成功")
+            // 刷新课程表
+            this.getXkListByXnxqAndJgId(this.Xnxq.xnxqh, this.userInfo.useraccount)
+            this.manageVisible = false
+            this.loading = false
+            Loading.hide()
+          } else {
+            ElMessage.error(data.msg)
+          }
+        }).catch(error=>{
+          this.loading = false
+          Loading.hide()
+        })
+      } else {
+        ElMessage.error("完成课程、班级选择")
+      }
+      
+    }
     
 
   },
@@ -265,6 +439,13 @@ export default {
       || data.sysmph.includes(this.search.toLowerCase())
       || data.jgmc.includes(this.search.toLowerCase()))
     },
+
+    getKcList() {
+      return this.KcAndBjList.map(item => {return item.kcmc})
+    },
+    getBjOptionList() {
+      return this.Bjlist.filter(i => { return this.BjOption.some(t=> { return t == i.bh }) })
+    }
   }
 }
 </script>
