@@ -2,6 +2,7 @@
   <el-card class="account-container">
     <h3>实验室管理</h3>
     <el-divider />
+    <br/>
         <el-scrollbar>
           <div style="display: flex; align-items: center;">
             <p style="margin-right: 1rem;">学院</p>
@@ -192,7 +193,9 @@ export default {
         this.YxsOption = item.dwmc
         this.YxsId = item.dwh
         this.YxsMc = item.dwmc
+        Loading.show()
         this.getSysListById(item.dwh)
+        Loading.hide()
       } else {
         ElMessage.error("请选择学院")
       }
@@ -313,14 +316,84 @@ export default {
 </script>
 
 <style>
-.el-upload-dragger {
-  height: 10rem;
-  width: 16rem;
+
+.el-popper.is-customized {
+  /* Set padding to ensure the height is 32px */
+  padding: 6px 12px;
+  background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
 }
 
-</style>
+.el-popper.is-customized .el-popper__arrow::before {
+  background: linear-gradient(45deg, #b2e68d, #bce689);
+  right: 0;
+}
 
+.el-button {
+    /* display: inline-flex; */
+  width: 6rem !important;
+}
+
+.el-select .el-input__inner {
+    width: 6rem;
+}
+</style>
 <style scoped>
 
+* {
+  margin: 0;
+  padding: 0;
+}
 
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  color: #677998;
+}
+
+thead {
+  background: #d4f7fd;
+}
+th {
+  font-weight: normal;
+  height: 46px !important;
+}
+tbody {
+  font-size: 12px;
+}
+th,
+td {
+  text-align: center;
+  height: 80px;
+  border-right: 1px solid #fefefe;
+  border-bottom: 1px solid #fefefe;
+}
+tr td div {
+  background: #049EFF; 
+  width: 100%;
+  height: 100%;
+  color: #efefef;
+  border-radius: 10px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+tr td:first-child {
+  color: #333;
+}
+.course {
+  background-color: #ebbbbb;
+  color: #fff;
+  display: inline-block;
+  border-radius: 3px;
+  width: 47%;
+  margin: 1px 1%;
+}
+.bgColor {
+  background-color: #89b2e5;
+}
+.paike {
+  background-color: #f2f7f8;
+  color: #049EFF;
+}
 </style>

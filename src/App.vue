@@ -22,10 +22,10 @@
           <el-menu-item index="/laboratory_schedule"><el-icon><i-school /></el-icon><template #title>实验室课表</template></el-menu-item>
 
           <!-- 系统设置 -->
-          <el-menu-item index="/laboratory_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-school /></el-icon><template #title>实验室管理</template></el-menu-item>
+          <el-menu-item index="/laboratory_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-tools /></el-icon><template #title>实验室管理</template></el-menu-item>
 
           <!-- 教师页面 -->
-          <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-platform /></el-icon><template #title>排课管理</template></el-menu-item>
+          <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-tools /></el-icon><template #title>排课管理</template></el-menu-item>
 
         </el-menu>
       </el-aside>

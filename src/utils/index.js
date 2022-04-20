@@ -21,14 +21,11 @@ export function localGet (key) {
     return str.match(reg) && str.match(reg).length
   }
   
-  // 单张图片上传
-  export const uploadImgServer = 'http://backend-api-02.newbee.ltd/manage-api/v1/upload/file'
-  // 多张图片上传
-  export const uploadImgsServer = 'http://backend-api-02.newbee.ltd/manage-api/v1/upload/files'
 
 
 export const pathMap = {
     login: '登录',
+    home: '首页',
     introduce: '系统介绍',
     student_manage: '学生管理',
     teacher_manage: '教师管理',
@@ -36,7 +33,5 @@ export const pathMap = {
     class_schedule: '班级课表管理',
     export_schedule: '导出课表',
     laboratory_schedule: '实验室课表',
-
-
-  }
+}
   

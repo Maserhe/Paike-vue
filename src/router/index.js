@@ -6,6 +6,7 @@ const routes = [
 
   {
     path: '/login',
+    name: 'login',
     component: () => import('@/views/login/index'),
     hidden: true
   },
@@ -42,6 +43,7 @@ const routes = [
   // 首页介绍界面
   {
     path: '/',
+    name: 'home',
     redirect: '/introduce'
   },
   
