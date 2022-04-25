@@ -58,8 +58,11 @@
           <el-input v-model="SysInfo.sysmph" type="text" autocomplete="off"></el-input>
         </el-form-item>
          <el-form-item>
-          <el-button type="primary" @click="updateSysInfo('sysInfoRef')">更新</el-button>
-          <el-button @click="resetForm('sysInfoRef')">重置</el-button>
+           <div style="text-align: center;">
+            <el-button type="primary" @click="updateSysInfo('sysInfoRef')">更新</el-button>
+            <el-button @click="resetForm('sysInfoRef')">重置</el-button>
+           </div>
+         
         </el-form-item>
        </el-form>
   </el-dialog>
@@ -76,8 +79,8 @@
               <el-input v-model="addSysInfo.sysmph" type="text" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="addSys('addSysInfoRef')">添加</el-button>
-              <el-button @click="resetForm('addSysInfoRef')">重置</el-button>
+                <el-button type="primary" @click="addSys('addSysInfoRef')">添加</el-button>
+                <el-button @click="resetForm('addSysInfoRef')">重置</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -215,7 +218,10 @@ export default {
         const data = res.data
         if (data.code == 200) {
           ElMessage.success("删除成功")
+          Loading.show()
           this.getSysListById(this.YxsId)
+          Loading.hide()
+
         } else {
           ElMessage.error("删除错误")
         }
@@ -271,7 +277,10 @@ export default {
             if (data.code == 200) {
               ElMessage.success("添加成功")
               // 刷新实验室 
+              Loading.show()
               this.getSysListById(this.YxsId)
+              Loading.hide()
+              this.addDialogVisible = false
             } else {
               ElMessage.error(data.msg)
             }
