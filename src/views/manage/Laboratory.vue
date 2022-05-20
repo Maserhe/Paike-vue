@@ -15,13 +15,13 @@
 
         <!-- 表格 -->
         <el-table :data="getSysFilter.slice((currentPage - 1)* pagesize, currentPage * pagesize)" style="width: 100%">
-            <template #tableHead>
-              <h1>hahaha</h1>
-            </template>
-            
+
             <el-table-column type="index" ></el-table-column>
             <el-table-column label="实验名称" prop="sysmc" width="220rem" ></el-table-column>
             <el-table-column label="门牌号" prop="sysmph" ></el-table-column>
+            <el-table-column label="容量" prop="capacity" ></el-table-column>
+            <el-table-column label="状态" prop="state" ></el-table-column>
+
             <el-table-column label="操作" width="300rem">
                 <template #header>
                   <el-input v-model="search" placeholder="输入实验室门牌号、名称搜索" />
@@ -35,6 +35,7 @@
                     </el-popconfirm>
                 </template>
             </el-table-column>
+
             <template #append>
               <el-pagination
               @size-change="handleSizeChange"
@@ -50,40 +51,70 @@
 
    <el-dialog v-model="dialogVisible" title="实验室信息" width="80%" :before-close="handleClose">
       <!-- 实验室表单, 修改实验室信息 -->
-       <el-form ref="sysInfoRef" :model="SysInfo" :label-position="'top'" label-width="30rem">
-         <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: true, message: '非必需填写,例如: 人工智能实验室, 不填写的话默认名称: 机房' },]">
+       <el-form ref="sysInfoRef" :model="SysInfo" :label-position="'left'" class="sys-form">
+         <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: true, message: '必需填写,例如: 人工智能实验室, 例如: 机房' },]">
           <el-input v-model="SysInfo.sysmc" type="text" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="实验室门牌号" prop="sysmph" :rules="[{ required: true, message: '必需填写,表示实验室位置,例如: 205' },]">
           <el-input v-model="SysInfo.sysmph" type="text" autocomplete="off"></el-input>
         </el-form-item>
-         <el-form-item>
-           <div style="text-align: center;">
+
+        <el-form-item label="实验室的容量" prop="capacity" :rules="[{ required: true, message: '必需填写,实验室的人数,例如: 40' },]">
+          <el-input v-model="SysInfo.capacity" type="number" min="0" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="实验室的类型" :rules="[{ required: true, message: '必需选择，默认开放'},]">
+          <el-radio-group v-model="SysInfo.systype">
+            <el-radio :label="'0'">开放</el-radio>
+            <el-radio :label="'1'">禁用</el-radio>
+            <el-radio :label="'2'">报修</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item>
+          <div style="margin: 0 auto;">
             <el-button type="primary" @click="updateSysInfo('sysInfoRef')">更新</el-button>
             <el-button @click="resetForm('sysInfoRef')">重置</el-button>
-           </div>
+        </div>
          
         </el-form-item>
        </el-form>
   </el-dialog>
 
   <!--  添加实验室的对话框 -->
-  <el-dialog v-model="addDialogVisible" title="添加实验室" width="80%" :before-close="handleClose">
+  <el-dialog v-model="addDialogVisible" title="添加实验室" width="60%" :before-close="handleClose">
       <el-tabs v-model="activeName"  @tab-click="handleClick">
         <el-tab-pane label="单个添加" name="first">
-          <el-form ref="addSysInfoRef" :model="addSysInfo" :label-position="'top'" label-width="30rem">
+
+          <el-form ref="addSysInfoRef" :model="addSysInfo" :label-position="'left'" class="sys-form" >
             <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: true, message: '非必需填写,例如: 人工智能实验室, 不填写的话默认名称: 机房' },]">
               <el-input v-model="addSysInfo.sysmc" type="text" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="实验室门牌号" prop="sysmph" :rules="[{ required: true, message: '必需填写,表示实验室位置,例如: 205' },]">
               <el-input v-model="addSysInfo.sysmph" type="text" autocomplete="off"></el-input>
             </el-form-item>
+
+            <el-form-item label="实验室的容量" prop="capacity" :rules="[{ required: true, message: '必需填写,实验室的人数,例如: 40' },]">
+              <el-input v-model="addSysInfo.capacity" type="number" min="0" autocomplete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="实验室的类型" :rules="[{ required: true, message: '必需选择，默认开放'},]">
+            <el-radio-group v-model="addSysInfo.systype">
+              <el-radio :label="'0'">开放</el-radio>
+              <el-radio :label="'1'">禁用</el-radio>
+              <el-radio :label="'2'">报修</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
             <el-form-item>
+              <div style="margin: 0 auto;">
                 <el-button type="primary" @click="addSys('addSysInfoRef')">添加</el-button>
                 <el-button @click="resetForm('addSysInfoRef')">重置</el-button>
+              </div>
             </el-form-item>
           </el-form>
         </el-tab-pane>
+
         <el-tab-pane label="批量添加" name="second">
          <div style="text-align: center"> 
             <el-upload drag action="" :http-request="uploadCSVFile" :limit="1"  accept=".csv">
@@ -142,6 +173,8 @@ export default {
         sysh: "",   // 实验室号
         sysmc: "",  // 实验室名称
         sysmph: "", // 实验室门牌号
+        systype: "",
+
         yxsh: "",   // 院系所号
         yxmc: "",   // 院系所名称
       },
@@ -153,6 +186,8 @@ export default {
       addSysInfo: {
         sysmc: "",  // 实验室名称
         sysmph: "", // 实验室门牌号
+        capacity: "", // 实验室的人数
+        systype: '0', // 实验室的状态
       }
       
 
@@ -168,7 +203,7 @@ export default {
       console.log(tab, event)
     },
 
-    clearSysInfo() { this.SysInfo = {sysh: "", sysmc: "", sysmph: "", yxsh: "", yxmc: "", }},
+    clearSysInfo() { this.SysInfo = {sysh: "", sysmc: "", sysmph: "", yxsh: "", yxmc: "", capacity: "", systype: 0}},
     // 重置表单
     resetForm(formName) {
       this.$refs[formName].resetFields()
@@ -181,6 +216,7 @@ export default {
     handleCurrentChange: function(currentPage){
       this.currentPage = currentPage;
     },
+
     // 获取所有院系所信息
     getYxsList() {
       this.$axios.get("/weixin-yxs/getAllYxs").then(res => {
@@ -221,7 +257,6 @@ export default {
           Loading.show()
           this.getSysListById(this.YxsId)
           Loading.hide()
-
         } else {
           ElMessage.error("删除错误")
         }
@@ -231,8 +266,11 @@ export default {
     changeSysInfo(row) {
       this.SysInfo = null
       this.dialogVisible = true
+      console.log(JSON.parse(JSON.stringify(row)))
       this.SysInfo = JSON.parse(JSON.stringify(row))
     },
+
+
     // 更新实验室信息接口
     updateSysInfo(formName) {
       this.$refs[formName].validate((valid) => {
@@ -241,10 +279,14 @@ export default {
             sysh: this.SysInfo.sysh,
             sysmc: this.SysInfo.sysmc,
             sysmph: this.SysInfo.sysmph,
+            capacity: this.SysInfo.capacity,
+            systype: this.SysInfo.systype,
+
           }).then(res => {
             const data = res.data
             if (data.code == 200) {
               ElMessage.success("更新数据成功")
+              this.dialogVisible = false
               this.getSysListById(this.YxsId)
             }
           })
@@ -252,7 +294,7 @@ export default {
           ElMessage.error("表单不合法！！")
         }
       }) 
-    },
+    }, 
     // 添加实验室 对话框
     addSysDialog() {
       if (!this.YxsId) {
@@ -270,6 +312,8 @@ export default {
           this.$axios.post("/weixin-syszk/addSys", {
             sysmc: this.addSysInfo.sysmc,
             sysmph: this.addSysInfo.sysmph,
+            capacity: this.addSysInfo.capacity,
+            systype: this.addSysInfo.systype,
             yxsh: this.YxsId,
             yxmc: this.YxsMc,
           }).then(res => {
@@ -309,14 +353,23 @@ export default {
         }
       })
     },
-
-
   },
   
+
   // 计算属性
   computed: {
     getSysFilter() {
-      return this.SysList.filter( (data) => !this.search || data.sysmc.includes(this.search.toLowerCase()) || data.sysmph.includes(this.search.toLowerCase()))
+
+      return this.SysList.map(t => {
+        if(t.systype == 0) {
+          t['state'] = "开放"
+        } else if (t.systype == 1){
+          t['state'] = "禁用"
+        } else {
+          t['state'] = "报修"
+        }
+        return t
+      }).filter( (data) => !this.search || data.sysmc.includes(this.search.toLowerCase()) || data.sysmph.includes(this.search.toLowerCase()))
     },
 
   },
@@ -343,7 +396,10 @@ export default {
 }
 
 .el-select .el-input__inner {
-    width: 6rem;
+    width: 8rem;
+}
+.el-form-item {
+  margin-bottom: 18px !important;
 }
 </style>
 <style scoped>
@@ -351,13 +407,6 @@ export default {
 * {
   margin: 0;
   padding: 0;
-}
-
-table {
-  table-layout: fixed;
-  width: 100%;
-  border-collapse: collapse;
-  color: #677998;
 }
 
 thead {
@@ -390,19 +439,14 @@ tr td div {
 tr td:first-child {
   color: #333;
 }
-.course {
-  background-color: #ebbbbb;
-  color: #fff;
-  display: inline-block;
-  border-radius: 3px;
-  width: 47%;
-  margin: 1px 1%;
-}
-.bgColor {
-  background-color: #89b2e5;
-}
-.paike {
-  background-color: #f2f7f8;
-  color: #049EFF;
+
+
+.sys-form {
+  position: relative;
+  width: 800px;
+  max-width: 100%;
+  padding: 35px 35px 0;
+  margin: 0 auto;
+  overflow: hidden;
 }
 </style>
