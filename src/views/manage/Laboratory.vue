@@ -1,6 +1,6 @@
 <template>
   <el-card class="account-container">
-    <h3>实验室管理</h3>
+    <h4>实验室管理</h4>
     <el-divider />
     <br/>
         <el-scrollbar>
@@ -27,7 +27,7 @@
                   <el-input v-model="search" placeholder="输入实验室门牌号、名称搜索" />
                 </template>
                 <template #default="scope" >
-                    <el-button type="primary" @click="changeSysInfo(scope.row)">修改</el-button>
+                    <el-button type="primary" @click="changeSysInfo(scope.row)">管理</el-button>
                     <el-popconfirm title="确定要删除该实验室?" @confirm="deleteSysById(scope.row.sysh)">
                       <template #reference>
                         <el-button type="danger" >删除</el-button>
@@ -49,9 +49,11 @@
           </template>
         </el-table>
 
-   <el-dialog v-model="dialogVisible" title="实验室信息" width="80%" :before-close="handleClose">
+   <el-dialog v-model="dialogVisible" title="实验室管理" width="60%" :before-close="handleClose">
       <!-- 实验室表单, 修改实验室信息 -->
-       <el-form ref="sysInfoRef" :model="SysInfo" :label-position="'left'" class="sys-form">
+    <el-tabs @tab-click="tabsClick">
+      <el-tab-pane label="修改实验室信息" name="first">
+        <el-form ref="sysInfoRef" :model="SysInfo" :label-position="'left'" class="sys-form">
          <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: true, message: '必需填写,例如: 人工智能实验室, 例如: 机房' },]">
           <el-input v-model="SysInfo.sysmc" type="text" autocomplete="off"></el-input>
         </el-form-item>
@@ -76,9 +78,55 @@
             <el-button type="primary" @click="updateSysInfo('sysInfoRef')">更新</el-button>
             <el-button @click="resetForm('sysInfoRef')">重置</el-button>
         </div>
-         
         </el-form-item>
        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="设备管理" name="second">
+        <el-table :data="sbTableInfo" style="width: 100%">
+
+            <el-table-column type="index" ></el-table-column>
+            <el-table-column label="设备名称" prop="sbmc" width="220rem" ></el-table-column>
+            <el-table-column label="设备状态" prop="state" width="220rem" ></el-table-column>
+            <el-table-column label="操作" width="300rem">
+               
+                <template #default="scope" >
+                    <!-- <el-button type="primary" @click="deleteDevice(scope.row.sbh)">管理</el-button> -->
+                    <el-popconfirm title="确定要删除该实验室?" @confirm="deleteDevice(scope.row.sbh)">
+                      <template #reference>
+                        <el-button type="danger" >删除</el-button>
+                      </template>
+                    </el-popconfirm>
+                </template>
+            </el-table-column>
+
+        </el-table>
+
+
+      </el-tab-pane>
+      <el-tab-pane label="添加设备" name="third">
+        <el-form ref="addSbInfoRef" :model="addSbInfo" :label-position="'left'" class="sys-form" >
+            <el-form-item label="设备的名称" prop="sysmc" :rules="[{ required: true, message: '必需填写,例如: 投影仪' },]">
+              <el-input v-model="addSbInfo.sbmc" type="text" autocomplete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="设备的状态" :rules="[{ required: true, message: '必需选择，默认开放'},]">
+            <el-radio-group v-model="addSbInfo.sbzt">
+              <el-radio :label="'0'">正常</el-radio>
+              <el-radio :label="'1'">故障</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+            <el-form-item>
+              <div style="margin: 0 auto;">
+                <el-button type="primary" @click="addSb()">添加</el-button>
+                <el-button @click="resetForm('addSbInfoRef')">重置</el-button>
+              </div>
+            </el-form-item>
+          </el-form>
+      </el-tab-pane>
+    </el-tabs>
+
+
   </el-dialog>
 
   <!--  添加实验室的对话框 -->
@@ -188,8 +236,17 @@ export default {
         sysmph: "", // 实验室门牌号
         capacity: "", // 实验室的人数
         systype: '0', // 实验室的状态
-      }
+      },
       
+      // 设备列表
+      sbList: [],
+
+      // 添加设备
+      addSbInfo: {
+        sysh: "", // 实验室号
+        sbmc: "", // 设备名称
+        sbzt: '0', // 设备 状态
+      }
 
     }
   },
@@ -204,10 +261,12 @@ export default {
     },
 
     clearSysInfo() { this.SysInfo = {sysh: "", sysmc: "", sysmph: "", yxsh: "", yxmc: "", capacity: "", systype: 0}},
+    claearAddSbInfo() { this.addSbInfo = { sysh: "", sbmc: "", sbzt: "0"}},
     // 重置表单
     resetForm(formName) {
       this.$refs[formName].resetFields()
       this.clearSysInfo()
+      this.claearAddSbInfo()
     },
     // 分页
     handleSizeChange: function (size) {
@@ -268,6 +327,11 @@ export default {
       this.dialogVisible = true
       console.log(JSON.parse(JSON.stringify(row)))
       this.SysInfo = JSON.parse(JSON.stringify(row))
+
+      // 刷新 设备列表
+      Loading.show()
+      this.devicelist(this.SysInfo.sysh)
+      Loading.hide()
     },
 
 
@@ -353,6 +417,57 @@ export default {
         }
       })
     },
+
+    // 添加设备
+    addSb() {
+      if (this.SysInfo.sysh != "") {
+        this.addSbInfo.sysh = this.SysInfo.sysh
+        Loading.show()
+        this.addDevice()
+        Loading.hide()
+        this.claearAddSbInfo()
+      }
+    },
+
+    // 获取 设备列表
+    devicelist(id) {
+      this.$axios.post("/weixin-sbzk/deviceList", {sysh: id}).then(res => {
+        const data = res.data
+        if (data.code == 200) {
+          this.sbList = data.data
+        } else {
+          ElMessage.error("获取设备列表失败")
+        }
+      })
+    },
+    // 删除设备
+    deleteDevice(id) {
+      this.$axios.post("/weixin-sbzk/deleteDevice", {sbh: id}).then(res => {
+        const data = res.data
+        if (data.code == 200) {
+          this.devicelist(this.SysInfo.sysh)
+          ElMessage.success("删除成功")
+        }
+      })
+    },
+
+    // 添加设备
+    addDevice() {
+      if (this.addSbInfo.sbmc !="" && this.addSbInfo.sysh !="" && this.addSbInfo.sbzt != "") {
+        this.$axios.post("/weixin-sbzk/addDevice", this.addSbInfo).then(res=> {
+          const data = res.data
+          if (data.code == 200) {
+            ElMessage.success("添加成功")
+            this.devicelist(this.SysInfo.sysh)
+          }
+        })
+      } else {
+        ElMessage.error("请填写设备信息")
+      }
+    },
+
+    tabsClick(tab) {
+    }
   },
   
 
@@ -371,7 +486,12 @@ export default {
         return t
       }).filter( (data) => !this.search || data.sysmc.includes(this.search.toLowerCase()) || data.sysmph.includes(this.search.toLowerCase()))
     },
-
+    sbTableInfo() {
+      return this.sbList.map(t=> {
+        t['state'] = t.sbzt == "0" ? "正常": "故障"
+        return t
+      })
+    }
   },
 
 }

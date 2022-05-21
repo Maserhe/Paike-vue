@@ -39,6 +39,13 @@ const routes = [
     component: () => import('@/views/teacher/ExportSchedule.vue'),
     meta: { requiresAuth: true }
   },
+
+  {
+    path: '/repair_labs',
+    name: 'repair_labs',
+    component: () => import('@/views/teacher/RepairLabs.vue'),
+    meta: { requiresAuth: true }
+  },
   
   // 首页介绍界面
   {

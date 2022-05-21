@@ -1,6 +1,6 @@
 <template>
   <el-card class="account-container">
-      <h3>班级实验室课表</h3>
+      <h4>班级实验室课表</h4>
       <el-divider />
       <!-- 搜索框 -->
       <br/>
@@ -9,7 +9,7 @@
           <div style="display: flex; align-items: center;">
             <p style="margin-right: 1rem;">学期</p>
             <el-select v-model="XnxqOption" placeholder="选择学期" @change="changeXnxq" style="margin-right: 1rem">
-              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.qsrq" :value="item"> </el-option>
+              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.xnxqh" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">学院</p>
@@ -290,7 +290,7 @@ export default {
     // 选择学年
     changeXnxq() {
       this.Xnxq =  JSON.parse(JSON.stringify(this.XnxqOption))
-      this.XnxqOption = this.Xnxq.qsrq
+      this.XnxqOption = this.Xnxq.xnxqh
       if (!this.YxsList.length) {
         Loading.show()
         this.getYxsList()

@@ -1,6 +1,6 @@
 <template>
   <el-card class="account-container">
-      <h3>实验室课表查询</h3>
+      <h4>实验室课表查询</h4>
       <el-divider />
       <br/>
       
@@ -9,7 +9,7 @@
           <div style="display: flex; align-items: center;">
             <p style="margin-right: 1rem;">学期</p>
             <el-select v-model="XnxqOption" placeholder="选择学期" @change="changeXnxq" style="margin-right: 1rem">
-              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.qsrq" :value="item"> </el-option>
+              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.xnxqh" :value="item"> </el-option>
             </el-select>
 
             <p style="margin-right: 1rem;">学院</p>
@@ -17,14 +17,12 @@
               <el-option v-for="(item, index) in YxsList" :key="index" :label="item.dwmc" :value="item"> </el-option>
             </el-select>
 
-            <p style="margin-right: 1rem;">机房</p>
-            <el-select v-model="SysOption" placeholder="选择机房" @change="changeSys" style="margin-right: 1rem">
-              <el-option v-for="(item, index) in SysList" :key="index" :label="item.sysmph" :value="item"> </el-option>
-            </el-select>
+            <p style="margin-right: 1rem;">实验室</p>
+            <el-cascader placeholder="选择实验室" v-model="SysCascaderOption" :options="getSysCascader" @change="changeCascader"  style="margin-right: 1rem" />
 
             <p style="margin-right: 1rem;">周次</p>
             <el-select v-model="ZcOption" placeholder="选择周次" @change="changeZc" style="margin-right: 1rem">
-              <el-option v-for="(item, index) of 20" :key="index" :label="'第' + item + '周'" :value="item"> </el-option>
+              <el-option v-for="(item, index) in getZcList" :key="index" :label="'第' + item + '周'" :value="item"> </el-option>
             </el-select>
 
             <!-- <el-button type="primary" style="display: inline-block; width: 3rem" @click="queryLabSchedule">查询</el-button> -->
@@ -149,9 +147,10 @@ export default {
     const BjOption = ref("")
     const XnxqOption = ref("")
     const YxsOption = ref("")
-    const SysOption = ref("")
     const ZcOption = ref("")
     const loading = ref(false)
+
+    const SysCascaderOption = ref([])
 
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
@@ -159,12 +158,13 @@ export default {
       handleClose,
       XnxqOption,
       YxsOption,
-      SysOption,
       ZcOption,
       KcOption,
       BjOption,
 
       loading,
+
+      SysCascaderOption,
     }
   },
 
@@ -240,7 +240,7 @@ export default {
     // 选择学年
     changeXnxq() {
       this.Xnxq = JSON.parse(JSON.stringify(this.XnxqOption))
-      this.XnxqOption = this.Xnxq.qsrq
+      this.XnxqOption = this.Xnxq.xnxqh
       this.initcourse()
       
       this.ZcOption = ""
@@ -252,6 +252,7 @@ export default {
       if (!this.YxsList.length) {
         this.getYxsList()
       }
+      console.log()
     },
 
     // 获取所有院系所信息
@@ -269,18 +270,18 @@ export default {
       this.initcourse()
       this.Yxs = JSON.parse(JSON.stringify(this.YxsOption))
       this.YxsOption = this.Yxs.dwmc
-      this.SysOption = ""
+      this.SysCascaderOption = ""
       this.ZcOption = ""
       Loading.show()
       this.getSysListById(this.Yxs.dwh)
       Loading.hide()
     },
 
+
     // 选择实验室
-    changeSys() {
-      this.initcourse()
-      this.Sys = JSON.parse(JSON.stringify(this.SysOption))
-      this.SysOption = this.Sys.sysmph
+    changeCascader(value) {
+      // 获取实验室的信息 
+      this.Sys = JSON.parse(JSON.stringify( this.SysList.find(t=> t.sysh == value[1]) ))
       this.ZcOption = ""
       // 查询老师的 课程
       if (!this.KcAndBjList.length) {
@@ -288,21 +289,21 @@ export default {
         this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
         Loading.hide()
       }
+
+
     },
 
     // 选择周次
     changeZc() {
       // 查询 这一周的 课程
-      if (this.XnxqOption && this.YxsOption && this.SysOption) {
+      if (this.XnxqOption && this.YxsOption && this.SysCascaderOption) {
         Loading.show()
         this.getSysPaikeTable(this.Xnxq.xnxqh, this.ZcOption, this.Sys.sysh)
         Loading.hide()
-
       } else {
         ElMessage.error("请完成前面的选项")
         this.ZcOption = ""
       }
-      
     },
 
     // 选择课程
@@ -340,6 +341,7 @@ export default {
           this.SysList = data.data
         }
       })
+      // 处理试验机列表
     },
 
     // 获取 课程表
@@ -392,7 +394,7 @@ export default {
 
     // 点击排课
     paikeButton(index, chindex) {
-      if(this.XnxqOption && this.YxsOption && this.SysOption && this.ZcOption && this.KcAndBjList) {
+      if(this.XnxqOption && this.YxsOption && this.SysCascaderOption && this.ZcOption && this.KcAndBjList) {
         this.thatDay = index + 1
         this.thatSection = chindex
         this.bz = ""
@@ -455,6 +457,29 @@ export default {
     },
     getBjOptionList() {
       return this.Bjlist.filter(i => { return this.BjOption.some(t=> { return t == i.bh }) })
+    },
+
+    getSysCascader() {
+      let ans = []
+      var mp = new Map()
+      this.SysList.map(t => {
+        if(mp.has(t.sysmc)) {
+          var temp = mp.get(t.sysmc)
+          temp.children.push({value: t.sysh, label: t.sysmph})
+        } else {
+          var temp = {}
+          temp.value = t.yxsh
+          temp.label = t.sysmc
+          temp.children = [{ value: t.sysh, label: t.sysmph }]
+          mp.set(t.sysmc, temp)
+          ans.push(temp)
+        }
+      })
+      return ans
+    },
+
+    getZcList() {
+      return Object.keys(this.Xnxq).length == 0? []: Array.from(new Array(parseInt(this.Xnxq.jszc) + 1).keys()).slice(parseInt(this.Xnxq.qszc))
     }
   }
 }

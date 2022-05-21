@@ -1,6 +1,6 @@
 <template>
   <el-card class="account-container">
-      <h3>查询自己的排课课表</h3>
+      <h4>查询自己的排课课表</h4>
       <el-divider />
 
        <br/>
@@ -8,11 +8,14 @@
           <div style="display: flex; align-items: center;">
             <p style="margin-right: 1rem;">学期</p>
             <el-select v-model="XnxqOption" placeholder="选择学期" @change="changeXnxq" style="margin-right: 1rem">
-              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.qsrq" :value="item"> </el-option>
+              <el-option v-for="(item, index) in XnxqList" :key="index" :label="item.xnxqh" :value="item"> </el-option>
             </el-select>
             <el-button type="primary" @click="QuerySchedule">查询课表</el-button>
             <el-button type="primary" @click="ExportSchedule">导出课表</el-button>
+
           </div>
+
+
       </el-scrollbar>
       <br/>
 
@@ -181,9 +184,42 @@ export default {
     const KcOption = ref("")
     const BjOption = ref("")
 
+    const values = ref([])
+    const TestOption = [
+      {
+        value: '0',
+        label: 'Form',
+        children: [
+          {
+            value: '0',
+            label: 'Radio',
+          },
+          {
+            value: '0',
+            label: 'Checkbox',
+          },
+        ],
+      },
+      {
+        value: 'test',
+        label: '测试',
+        children: [
+          {
+            value: 'radio',
+            label: 'Radio',
+          },
+          {
+            value: 'checkbox',
+            label: 'Checkbox',
+          },
+        ],
+      },
+    ]
+
     const dialogVisible = ref(false)
     const manageVisible = ref(false)
     const loading = ref(false)
+
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
       XnxqOption,
@@ -194,6 +230,9 @@ export default {
       KcOption,
       BjOption,
       loading,
+
+      TestOption,
+      values,
     }
   },
   data() {
@@ -222,6 +261,7 @@ export default {
       Bjlist: [], 
 
       managePaike: {},
+      // 测试级 联动
 
     }
 
@@ -245,6 +285,12 @@ export default {
     },
     handleCurrentChange: function(currentPage){
       this.currentPage = currentPage;
+    },
+
+    handleChange(value){
+      console.log(JSON.stringify(value))
+      console.log(value)
+      this.processSysInfo()
     },
 
 
@@ -280,7 +326,7 @@ export default {
     // 选择学年
     changeXnxq() {
       this.Xnxq =  JSON.parse(JSON.stringify(this.XnxqOption))
-      this.XnxqOption = this.Xnxq.qsrq
+      this.XnxqOption = this.Xnxq.xnxqh
 
       Loading.show()
       this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
@@ -420,10 +466,7 @@ export default {
       } else {
         ElMessage.error("完成课程、班级选择")
       }
-      
-    }
-    
-
+    },
   },
 
   computed: {

@@ -100,6 +100,8 @@ export default {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
+    background-color: #222832;
+    color: #e9e9e9;
   }
   .el-icon-back {
     border: 1px solid #e9e9e9;

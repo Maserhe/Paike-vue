@@ -33,5 +33,6 @@ export const pathMap = {
     class_schedule: '班级课表管理',
     export_schedule: '导出课表',
     laboratory_schedule: '实验室课表',
+    repair_labs: '实验室报修'
 }
   

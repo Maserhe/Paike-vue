@@ -26,6 +26,7 @@
 
           <!-- 教师页面 -->
           <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-tools /></el-icon><template #title>排课管理</template></el-menu-item>
+          <el-menu-item index="/repair_labs" v-if="userInfo.useraccounttype == 1"><el-icon><i-warning-filled /></el-icon><template #title>实验室报修</template></el-menu-item>
 
         </el-menu>
       </el-aside>
