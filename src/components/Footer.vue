@@ -2,7 +2,7 @@
   <div class="footer">
     <div class="left">Copyright © 2022  <a target="_blank" href="https://github.com/Maserhe">Maserhe</a>. All rights reserved.</div>
     <div class="right">
-      <a>沈工大排实验室课管理</a>
+      <a>沈工大实验室管理</a>
     </div>
   </div>
 </template>

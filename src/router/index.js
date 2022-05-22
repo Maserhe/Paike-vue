@@ -24,11 +24,19 @@ const routes = [
     component: () => import('@/components/SearchLabsSchedule.vue'),
     meta: { requiresAuth: true }
   },
+  // 管理员界面
 
   {
     path: '/laboratory_manage',
     name: 'laboratory_manage',
     component: () => import('@/views/manage/Laboratory.vue'),
+    meta: { requiresAuth: true }
+  },
+
+  {
+    path: '/repair_info',
+    name: 'repair_info',
+    component: () => import('@/views/manage/RepairInfo.vue'),
     meta: { requiresAuth: true }
   },
 
@@ -51,7 +59,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    redirect: '/introduce'
+    redirect: '/class_schedule'
   },
   
   {

@@ -24,7 +24,7 @@
 
             <el-table-column label="操作" width="300rem">
                 <template #header>
-                  <el-input v-model="search" placeholder="输入实验室门牌号、名称搜索" />
+                  <el-input v-model="search" placeholder="输入实验室门牌号、名称、状态过滤" />
                 </template>
                 <template #default="scope" >
                     <el-button type="primary" @click="changeSysInfo(scope.row)">管理</el-button>
@@ -69,7 +69,6 @@
           <el-radio-group v-model="SysInfo.systype">
             <el-radio :label="'0'">开放</el-radio>
             <el-radio :label="'1'">禁用</el-radio>
-            <el-radio :label="'2'">报修</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -150,7 +149,6 @@
             <el-radio-group v-model="addSysInfo.systype">
               <el-radio :label="'0'">开放</el-radio>
               <el-radio :label="'1'">禁用</el-radio>
-              <el-radio :label="'2'">报修</el-radio>
             </el-radio-group>
           </el-form-item>
 
@@ -484,7 +482,10 @@ export default {
           t['state'] = "报修"
         }
         return t
-      }).filter( (data) => !this.search || data.sysmc.includes(this.search.toLowerCase()) || data.sysmph.includes(this.search.toLowerCase()))
+      }).filter( (data) => !this.search 
+      || data.sysmc.includes(this.search.toLowerCase()) 
+      || data.sysmph.includes(this.search.toLowerCase()) 
+      || data.state.includes(this.search.toLowerCase()))
     },
     sbTableInfo() {
       return this.sbList.map(t=> {

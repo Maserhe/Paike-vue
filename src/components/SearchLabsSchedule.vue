@@ -18,7 +18,7 @@
             </el-select>
 
             <p style="margin-right: 1rem;">实验室</p>
-            <el-cascader placeholder="选择实验室" v-model="SysCascaderOption" :options="getSysCascader" @change="changeCascader"  style="margin-right: 1rem" />
+            <el-cascader placeholder="选择实验室" v-model="SysCascaderOption" :options="getSysCascader" @change="changeCascader"  style="margin-right: 1rem" filterable />
 
             <p style="margin-right: 1rem;">周次</p>
             <el-select v-model="ZcOption" placeholder="选择周次" @change="changeZc" style="margin-right: 1rem">
@@ -79,7 +79,8 @@
     <el-dialog v-model="dialogVisible" title="排课管理" width="80%" :before-close="handleClose">
       <el-descriptions :column="1" border >
         <el-descriptions-item><template #label><el-icon> <i-tickets /></el-icon>学期学年</template>{{ XnxqOption }}</el-descriptions-item>
-        <el-descriptions-item><template #label><el-icon> <i-location-information /></el-icon>上课地址</template>{{ Yxs.dwmc }} {{ Sys.sysmph }} 教室</el-descriptions-item>
+        <el-descriptions-item><template #label><el-icon> <i-location-information /></el-icon>上课地址</template>{{ Yxs.dwmc }} {{ Sys.sysmph }} {{Sys.sysmc }}</el-descriptions-item>
+        <el-descriptions-item><template #label><el-icon> <i-grape /></el-icon>教室容量</template>{{ Sys.capacity }}</el-descriptions-item>
         <el-descriptions-item><template #label><el-icon> <i-timer /></el-icon>上课时间</template> 第 {{ ZcOption }} 周、 周 {{ thatDay }}、{{ sections[thatSection] }}</el-descriptions-item>
       </el-descriptions>
 
@@ -289,8 +290,6 @@ export default {
         this.getKcAndBjList(this.Xnxq.xnxqh, this.userInfo.useraccount)
         Loading.hide()
       }
-
-
     },
 
     // 选择周次
