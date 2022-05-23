@@ -1,5 +1,10 @@
 <template>
   <div class="login-container">
+    <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    </head>
+
+    
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
@@ -45,6 +50,15 @@
         </el-form-item>
       </el-tooltip>
 
+      <!-- 单选框按钮 -->
+      <!-- <div style="text-align: center">
+        <el-radio-group v-model="loginType">
+        <el-radio :label="1">普通用户</el-radio>
+        <el-radio :label="2">二级管理员</el-radio>
+         <el-radio :label="3">管理员</el-radio>
+      </el-radio-group>
+      </div> -->
+
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
     </el-form>
 
@@ -53,11 +67,11 @@
 </template>
 
 <script>
-
 import { validUsername } from '@/utils/validate'
 import { localGet, localSet } from '@/utils/index'
 export default {
   name: "Login",
+
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -74,6 +88,8 @@ export default {
       }
     }
     return {
+      loginType: 1,
+
       loginForm: {
         username: 'admin',
         password: 'admin'
@@ -115,6 +131,7 @@ export default {
         this.$refs.password.focus()
       })
     },
+
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
@@ -126,7 +143,7 @@ export default {
             if (data.code == 200) {
               const data = res.data
               const token = res.headers["authorization"]
-              console.log(typeof(token), token)
+              // console.log(typeof(token), token)
               localStorage.setItem("token", res.headers["authorization"])
               // 保存用户信息
               _this.$store.commit("SET_USERINFO", data.data)
@@ -135,7 +152,7 @@ export default {
               window.location.href="/"
             } else {
               // 登陆信息出现问题
-              console.log("=====")
+              // console.log("=====")
               ElMessage.error(data.msg)
             }
 
@@ -184,7 +201,6 @@ $cursor: #fff;
     height: 47px;
     width: 85%;
     background: transparent;
-
     input {
       background: transparent;
       border: 0px;
@@ -217,9 +233,14 @@ $dark_gray:#889aa4;
 $light_gray:#eee;
 
 .login-container {
+  display: flex;
   min-height: 100%;
   width: 100%;
   background-color: $bg;
+  // background-image: url('/src/assets/b8.jpeg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%; 
+
   overflow: hidden;
 
   .login-form {
@@ -229,6 +250,7 @@ $light_gray:#eee;
     padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+    // background-color: rgba(255,255,255,0.7);
   }
 
   .tips {
@@ -280,9 +302,13 @@ $light_gray:#eee;
   }
 
   @media only screen and (max-width: 470px) {
+
     .thirdparty-button {
       display: none;
+      
     }
+    
   }
+
 }
 </style>

@@ -47,6 +47,21 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
+  // 二级管理员页面
+  {
+    path: '/labs_info',
+    name: 'labs_info',
+    component: () => import('@/views/yxsmanage/LabsInfo.vue'),
+    meta: { requiresAuth: true }
+  },
+
+  {
+    path: '/repair_manage',
+    name: 'repair_manage',
+    component: () => import('@/views/yxsmanage/RepairInfo.vue'),
+    meta: { requiresAuth: true }
+  },
+
   // 教师界面
   {
     path: '/export_schedule',

@@ -36,5 +36,29 @@ export const pathMap = {
     repair_labs: '实验室报修',
     repair_info: '实验室报修管理',
     manage_admin: '二级管理员管理',
+
+    labs_info: "实验室管理",
+    repair_manage: "实验室报修管理",
+
 }
+
+export const publicPath = [
+  "/class_schedule",
+  "/laboratory_schedule",
+]
+
+export const teacherPath = [
+  "/export_schedule",
+  "/repair_labs"
+]
+
+export const adminPath = [
+  "/laboratory_manage",
+  "/repair_info",
+  "/manage_admin"
+]
+export const yxsAdminPath = [
+  "/labs_info",
+  "/repair_manage",
+]
   

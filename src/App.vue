@@ -31,6 +31,10 @@
           <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-tools /></el-icon><template #title>排课管理</template></el-menu-item>
           <el-menu-item index="/repair_labs" v-if="userInfo.useraccounttype == 1"><el-icon><i-warning-filled /></el-icon><template #title>实验室报修</template></el-menu-item>
 
+          <!-- 二级管理员页面 -->
+          <el-menu-item index="/labs_info" v-if="userInfo.useraccounttype == 3"><el-icon><i-tools /></el-icon><template #title>实验室管理</template></el-menu-item>
+          <el-menu-item index="/repair_manage" v-if="userInfo.useraccounttype == 3"><el-icon><i-message /></el-icon><template #title>报修信息管理</template></el-menu-item>
+
         </el-menu>
       </el-aside>
       <el-container class="content">
@@ -52,7 +56,7 @@ import { onUnmounted, reactive } from 'vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import { useRouter } from 'vue-router'
-import { pathMap, localGet } from '@/utils'
+import { pathMap, localGet , publicPath, teacherPath, adminPath, yxsAdminPath } from '@/utils'
 import { fromCode } from '@/utils/validate'
 export default {
   name: 'App',
@@ -92,8 +96,31 @@ export default {
           // 如果没有，则跳至登录页面
           next({ path: '/login' })
         } else {
-          // 否则继续执行
-          next()
+          
+          const path = to.path
+          if (publicPath.includes(path)) {
+              next()
+          } else {
+            // 否则继续执行
+            const user = JSON.parse(fromCode(sessionStorage.getItem("userInfo")))
+            const type = user.useraccounttype
+            
+            if ( type == 0 && adminPath.includes(path)) { // 管理员
+              next()
+              return 
+            } 
+            
+            if (type == 1 && teacherPath.includes(path)) { // 教室
+              next()
+              return
+            } 
+            if (type == 3 && yxsAdminPath.includes(path)) { // 学生
+              next()
+              return
+            }
+            next({ path: "/class_schedule"})
+          }
+
         }
       }
       state.showMenu = !noMenu.includes(to.path)
