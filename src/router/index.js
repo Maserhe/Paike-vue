@@ -40,6 +40,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
+  {
+    path: '/manage_admin',
+    name: 'manage_admin',
+    component: () => import('@/views/manage/YXSAdmin.vue'),
+    meta: { requiresAuth: true }
+  },
+
   // 教师界面
   {
     path: '/export_schedule',

@@ -94,11 +94,7 @@ export default {
         YxsOption,
         handleClose,
         sysDialogVisible,
-
-
     }
-
-
   },
   data() {
       return {
