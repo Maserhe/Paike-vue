@@ -51,7 +51,7 @@
 
    <el-dialog v-model="dialogVisible" title="实验室管理" width="60%" :before-close="handleClose">
       <!-- 实验室表单, 修改实验室信息 -->
-    <el-tabs @tab-click="tabsClick">
+    <el-tabs @tab-click="tabsClick" v-model="manageActiveName">
       <el-tab-pane label="修改实验室信息" name="first">
         <el-form ref="sysInfoRef" :model="SysInfo" :label-position="'left'" class="sys-form">
          <el-form-item label="实验室的名称" prop="sysmc" :rules="[{ required: true, message: '必需填写,例如: 人工智能实验室, 例如: 机房' },]">
@@ -187,11 +187,13 @@ export default {
   setup() {
     const dialogVisible = ref(false)
     const addDialogVisible = ref(false)
+    const manageActiveName = ref("first")
     const handleClose = (done) => { ElMessageBox.confirm('确定关闭对话框?', '温馨提示', {type: 'info',center: true}).then(() => { done() })}
     return {
       dialogVisible,
       handleClose,
       addDialogVisible,
+      manageActiveName,
     }
   },
 

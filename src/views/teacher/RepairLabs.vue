@@ -12,7 +12,7 @@
             </el-select>
             <p style="margin-right: 1rem;">实验室</p>
             <el-cascader placeholder="选择实验室" v-model="SysCascaderOption" :options="getSysCascader" @change="changeCascader"  style="margin-right: 1rem" filterable />
-            <el-button type="danger" @click="applySysRepair">其他报修</el-button>
+            <el-button type="danger" @click="applySysRepair">非设备报修</el-button>
           </div>
     </el-scrollbar>
 
@@ -24,13 +24,13 @@
           <el-table-column label="故障信息" prop="info" width="220rem" ></el-table-column>
 
 
-          <el-table-column label="操作" width="300rem">
+          <el-table-column label="设备报修" width="300rem">
             <template #header>
               <el-input v-model="search" placeholder="输入设备名称搜索" />
             </template>
 
             <template #default="scope">
-              <el-button type="danger" v-if="scope.row.sbzt == 0" @click="applyRepair(scope.row)" text >报修</el-button>
+              <el-button type="danger" v-if="scope.row.sbzt == 0" @click="applyRepair(scope.row)" text >设备报修</el-button>
             </template>
 
           </el-table-column>

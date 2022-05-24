@@ -1,6 +1,15 @@
 <template>
   <el-card class="account-container">
     <h4>实验室管理</h4>
+    <br/>
+    <el-descriptions column="2">
+    <el-descriptions-item label="学院">{{ Yxs.dwmc }}</el-descriptions-item>
+    <el-descriptions-item label="二级管理员">{{ userInfo.userrealname}} </el-descriptions-item>
+  </el-descriptions>
+
+
+
+
     <el-divider />
     <br>
     <el-button type="primary" style="display: inline-block" @click="addSysDialog">添加实验室</el-button>

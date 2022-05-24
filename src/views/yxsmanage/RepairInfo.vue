@@ -1,6 +1,11 @@
 <template>
     <el-card class="account-container">
       <h4>报修信息管理</h4>
+      <br/>
+      <el-descriptions column="2">
+    <el-descriptions-item label="学院">{{ Yxs.dwmc }}</el-descriptions-item>
+    <el-descriptions-item label="二级管理员">{{ userInfo.userrealname}} </el-descriptions-item>
+  </el-descriptions>
       <el-divider />
         <br>
          <!-- 表格 -->
