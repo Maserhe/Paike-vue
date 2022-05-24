@@ -25,7 +25,7 @@
           <el-menu-item index="/laboratory_manage" v-if="userInfo.useraccounttype == 0"><el-icon><i-tools /></el-icon><template #title>实验室管理</template></el-menu-item>
           <el-menu-item index="/repair_info" v-if="userInfo.useraccounttype == 0"><el-icon><i-message /></el-icon><template #title>报修信息管理</template></el-menu-item>
           <el-menu-item index="/manage_admin" v-if="userInfo.useraccounttype == 0"><el-icon><i-user /></el-icon><template #title>二级管理员管理</template></el-menu-item>
-          
+          <el-menu-item index="/course_time" v-if="userInfo.useraccounttype == 0"><el-icon><i-timer /></el-icon><template #title>排课统计管理</template></el-menu-item>
         
           <!-- 教师页面 -->
           <el-menu-item index="/export_schedule" v-if="userInfo.useraccounttype == 1"><el-icon><i-tools /></el-icon><template #title>排课管理</template></el-menu-item>
@@ -34,6 +34,7 @@
           <!-- 二级管理员页面 -->
           <el-menu-item index="/labs_info" v-if="userInfo.useraccounttype == 3"><el-icon><i-tools /></el-icon><template #title>实验室管理</template></el-menu-item>
           <el-menu-item index="/repair_manage" v-if="userInfo.useraccounttype == 3"><el-icon><i-message /></el-icon><template #title>报修信息管理</template></el-menu-item>
+          <el-menu-item index="/manage_course" v-if="userInfo.useraccounttype == 3"><el-icon><i-timer /></el-icon><template #title>排课统计管理</template></el-menu-item>
 
         </el-menu>
       </el-aside>

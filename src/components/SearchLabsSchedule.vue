@@ -42,7 +42,7 @@
                 <td style="font-size:12px;background:#d4f7fd;word-wrap: break-word; word-break: break-all;">{{item}}</td>
                 <!-- 后面五个 -->
                 <!-- 学生界面 -->
-                <td v-for="chindex of 5" :key="chindex">
+                <td v-for="chindex of 6" :key="chindex">
                   <div style v-if="courses[index][chindex - 1] &&  Object.keys(courses[index][chindex - 1]).length > 0 " @click="toScanDetail(courses[index][chindex - 1])">
                     教师: {{ courses[index][chindex - 1].jgmc }}
                     <br />
@@ -85,17 +85,6 @@
       </el-descriptions>
 
       <!-- 实验室表单, 修改实验室信息 -->
-      <!-- 学期: {{ Xnxq }}
-      <br/>
-      学院: {{ Yxs }} 
-      <br/>
-     实验室: {{ Sys }} 
-      <br/>
-     周次: {{ ZcOption }}
-      <br/>
-     天: {{ thatDay }}
-      <br/>
-      节: {{ thatSection  }} -->
     <el-divider />
     <!-- 查询老师的课程
     班级的 年级
@@ -195,7 +184,7 @@ export default {
         bz: "",
 
         // 排课
-        sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节"],
+        sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节", "11-12节"],
         weeks: ["周一", "周二", "周三", "周四", "周五","周六","周日"],
 
         courses: [

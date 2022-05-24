@@ -47,6 +47,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
+  {
+    path: '/course_time',
+    name: 'course_time',
+    component: () => import('@/views/manage/CourseTime.vue'),
+    meta: { requiresAuth: true }
+  },
+
   // 二级管理员页面
   {
     path: '/labs_info',
@@ -59,6 +66,13 @@ const routes = [
     path: '/repair_manage',
     name: 'repair_manage',
     component: () => import('@/views/yxsmanage/RepairInfo.vue'),
+    meta: { requiresAuth: true }
+  },
+
+  {
+    path: '/manage_course',
+    name: 'manage_course',
+    component: () => import('@/views/yxsmanage/ManageCourse.vue'),
     meta: { requiresAuth: true }
   },
 
