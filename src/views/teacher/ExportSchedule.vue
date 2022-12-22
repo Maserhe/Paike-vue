@@ -241,7 +241,7 @@ export default {
       // 分页
       currentPage: 1,
       pagesize: 10,
-      sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节"],
+      sections: ["周次\\节", "1-2节", "3-4节", "5-6节", "7-8节", "9-10节", "11-12节"],
 
       userInfo: null,
       XnxqList: [],
